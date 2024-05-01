@@ -1,18 +1,20 @@
 #include <iostream>
 #include <string>
 #include <conio.h>
+#include "StorageManager.h"
+
 
 int main() {
+    StorageManager m;
+
     int opcion = 0;
     char tecla;
-    std::string aux;
-
-    do{
+    do {
         system("cls");
         std::cout << "% MEGATRON3000\n";
         std::cout << "   Welcone to MEGATRON 3000\n";
         std::cout << "& Agregar tabla" << (opcion == 0 ? " <-" : "") << std::endl;
-        std::cout << "& Modificar Tabla" << (opcion == 1 ? " <-" : "") << std::endl;
+        std::cout << "& Leer tabla" << (opcion == 1 ? " <-" : "") << std::endl;
         std::cout << "& Consulta" << (opcion == 2 ? " <-" : "") << std::endl;
         std::cout << "& Quit" << (opcion == 3 ? " <-" : "") << std::endl;
 
@@ -23,70 +25,36 @@ int main() {
             opcion = (opcion > 0) ? opcion - 1 : 3;
         } else if (tecla == 80) { // Tecla de flecha abajo
             opcion = (opcion < 3) ? opcion + 1 : 0;
-        } else if (tecla == 13) { // Tecla Enter
-            // Ejecutar la opción seleccionada
+        } else if (tecla == 13 && opcion == 0) { //agregar tabla
             system("cls");
-            std::cout << "Seleccionaste la opcion " << opcion << std::endl;
-            break; // Salir del bucle
+            std::cout << "% MEGATRON3000\n";
+            m.AgregarTabla();
+        } else if (tecla == 13 && opcion == 1) { //  leer tabla
+            system("cls");
+            std::string direccion = "C:\\Users\\Michael\\Documents\\University\\5to semestre\\BDII\\Megatron\\";
+            std::string b;
+            std::cout << "Ingresa el archivo a leer" << std::endl;
+            std::cin >> b;
+            direccion = direccion + b;
+            std::cout << "% MEGATRON3000\n";
+            m.LeerTabla(direccion);
+        } else if (tecla == 13 && opcion == 2) { // consulta
+            system("cls");
+            std:: string b;
+            std::cout << "% MEGATRON3000\n";
+            m.printTable("Titanic.csv");
+            std::cout << "desea salir?" <<std::endl;
+            std::cin >> b;
+        } else if (tecla == 13 && opcion == 3) {  // quit 
+            system("cls");
+            std::cout << "% MEGATRON3000\n";
+            std::cout << "CERRANDO MEGATRON3000 ....\n";
+            opcion = -5;
         }
 
-    }while(aux != "quit");
-
-    return 0;
-}
-
-/*
-#include <iostream>
-#include <fstream>
-#include <sstream>
-#include <string>
-#include <vector>
-
-int main() {
-    // Abre el archivo en modo lectura
-    std::ifstream file("Titanic control 2024 - Hoja 1.csv");
-
-    // Verifica si el archivo se abrió correctamente
-    if (!file.is_open()) {
-        std::cerr << "No se pudo abrir el archivo." << std::endl;
-        return 1;
-    }
-
-    std::string line;
-    // Lee cada línea del archivo
-    while (std::getline(file, line)) {
-        std::vector<std::string> fields;
-        std::stringstream ss(line);
-        std::string field;
-        // Divide la línea en campos separados por comas
-        while (std::getline(ss, field, ',')) {
-            // Agrega el campo al vector de campos
-            fields.push_back(field);
-        }
-        // Procesa los campos como desees, aquí puedes imprimirlos
-        for (const auto& f : fields) {
-            std::cout << f << " ";
-        }
-        std::cout << std::endl;
-    }
-
-    // Cierra el archivo
-    file.close();
+    } while(opcion != -5);
 
     return 0;
 }
 
 
-#include <iostream>
-#include <fstream>
-#include <sstream>
-#include <string>
-#include <vector>
-int main() {
-
-    std::string tabla = "ssdf.csv";
-    std::string nombre = tabla.substr(tabla.length()-4);
-
-    std:::cou
-}
-//*/

@@ -4,12 +4,15 @@ project(Megatron)
 # Rutas completas a los archivos .cpp
 set(SOURCES
     Disco.cpp
+    StorageManager.cpp
     main.cpp
+
 )
 
 # Rutas completas a los archivos .h
 set(HEADERS
     Disco.h
+    StorageManager.h
 )
 
 # Crea el ejecutable

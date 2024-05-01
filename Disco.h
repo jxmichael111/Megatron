@@ -18,5 +18,3 @@ public:
    bool Disponibilidad(const wstring&);
    void AddCarpeta(const wstring&);
 };
-
-

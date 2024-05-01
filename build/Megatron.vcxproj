@@ -306,8 +306,10 @@ if %errorlevel% neq 0 goto :VCEnd</Command>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="C:\Users\Michael\Documents\University\5to semestre\BDII\Megatron\Disco.cpp" />
+    <ClCompile Include="C:\Users\Michael\Documents\University\5to semestre\BDII\Megatron\StorageManager.cpp" />
     <ClCompile Include="C:\Users\Michael\Documents\University\5to semestre\BDII\Megatron\main.cpp" />
     <ClInclude Include="C:\Users\Michael\Documents\University\5to semestre\BDII\Megatron\Disco.h" />
+    <ClInclude Include="C:\Users\Michael\Documents\University\5to semestre\BDII\Megatron\StorageManager.h" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="C:\Users\Michael\Documents\University\5to semestre\BDII\Megatron\build\ZERO_CHECK.vcxproj">

@@ -4,12 +4,18 @@
     <ClCompile Include="C:\Users\Michael\Documents\University\5to semestre\BDII\Megatron\Disco.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="C:\Users\Michael\Documents\University\5to semestre\BDII\Megatron\StorageManager.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
     <ClCompile Include="C:\Users\Michael\Documents\University\5to semestre\BDII\Megatron\main.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="C:\Users\Michael\Documents\University\5to semestre\BDII\Megatron\Disco.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\Users\Michael\Documents\University\5to semestre\BDII\Megatron\StorageManager.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
