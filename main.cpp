@@ -10,7 +10,7 @@ int main() {
     int opcion = 0;
     char tecla;
     do {
-        system("cls");
+        //system("cls");
         std::cout << "% MEGATRON3000\n";
         std::cout << "   Welcone to MEGATRON 3000\n";
         std::cout << "& Agregar tabla" << (opcion == 0 ? " <-" : "") << std::endl;
@@ -31,13 +31,11 @@ int main() {
             m.AgregarTabla();
         } else if (tecla == 13 && opcion == 1) { //  leer tabla
             system("cls");
-            std::string direccion = "C:\\Users\\Michael\\Documents\\University\\5to semestre\\BDII\\Megatron\\";
             std::string b;
             std::cout << "Ingresa el archivo a leer" << std::endl;
             std::cin >> b;
-            direccion = direccion + b;
             std::cout << "% MEGATRON3000\n";
-            m.LeerTabla(direccion);
+            m.LeerTabla(b);
         } else if (tecla == 13 && opcion == 2) { // consulta
             system("cls");
             std:: string b;

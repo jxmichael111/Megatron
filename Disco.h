@@ -10,9 +10,15 @@ private:
    int capacidad_total;
    int capacidad_utilizada;
    int espacio_libre;
+   int platos;
+   int superficies;
+   int pistas;
+   int bloques;
+   int sectores;
+
 
 public:
-   DiscoDuro(int);
+   DiscoDuro(int); // tamaño del disco en MB
    void almacenarRegistro(int);
    void mostrarInformacion();
    bool Disponibilidad(const wstring&);

@@ -41,10 +41,16 @@ void StorageManager::parser(std::string cadena){
 }
 
 void StorageManager::VerificarDato(std::string dato) {
+    int letra,numero,simbolo;
+    letra = numero = simbolo = 0;
+    for(int i = 0; i < dato.length(); i++){
+        if( )
+    }
 }
 
 void StorageManager::LeerTabla(std::string tabla) {
-    std::string nombre = tabla.substr(65, tabla.length() - 8);
+    std::string nombre = tabla.substr(0, tabla.length() - 4);
+    tabla = "C:\\Users\\Michael\\Documents\\University\\5to semestre\\BDII\\Megatron\\" + tabla;
     std::string direccionEsquema = "C:\\Users\\Michael\\Documents\\University\\5to semestre\\BDII\\Megatron\\esquema.txt";
     std::string direccionArchivo = "C:\\Users\\Michael\\Documents\\University\\5to semestre\\BDII\\Megatron\\" + nombre + ".txt";
 
@@ -92,7 +98,8 @@ void StorageManager::LeerTabla(std::string tabla) {
                 Endd << "NULL";
             else
                 Endd << palabras;
-            Endd << "#";
+            if (ss.peek() != EOF) // Si no es el final de la línea, añade #
+                Endd << "#";
         }
         Endd << std::endl;
     }
