@@ -1,16 +1,19 @@
 #include <iostream>
 #include <string>
 #include <conio.h>
+#include "Disco.h"
 #include "StorageManager.h"
-
 
 int main() {
     StorageManager m;
 
+    DiscoDuro a("8","128","300","800");
+    a.Iniciar();
+
     int opcion = 0;
     char tecla;
     do {
-        //system("cls");
+        system("cls");
         std::cout << "% MEGATRON3000\n";
         std::cout << "   Welcone to MEGATRON 3000\n";
         std::cout << "& Agregar tabla" << (opcion == 0 ? " <-" : "") << std::endl;
@@ -37,11 +40,13 @@ int main() {
             std::cout << "% MEGATRON3000\n";
             m.LeerTabla(b);
         } else if (tecla == 13 && opcion == 2) { // consulta
+            char b;
             system("cls");
-            std:: string b;
-            std::cout << "% MEGATRON3000\n";
-            m.printTable("Titanic.csv");
-            std::cout << "desea salir?" <<std::endl;
+            cout.flush();
+            string a;
+            getline(cin, a);
+            m.parser(a);
+            std::cout << "desea salir | presione N/n?" <<std::endl;
             std::cin >> b;
         } else if (tecla == 13 && opcion == 3) {  // quit 
             system("cls");
@@ -55,4 +60,4 @@ int main() {
     return 0;
 }
 
-
+    
