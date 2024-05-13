@@ -1,20 +1,20 @@
 #include <iostream>
 #include <fstream>
 #include <string>
-  
-
 using namespace std;
 
 class DiscoDuro {
 private:
+   int c_sector;
    string ruta;
-   string platos; 
-   string pistas;
-   string sectores;
-   string bloque;
+      int platos; 
+      int pistas;
+      int sectores;
+      int bloque;
 public:
-   DiscoDuro(string,string,string,string); // tamaño del disco en MB
+   DiscoDuro(int,int,int,int); // platos,pistas,sectores,bloques
    bool FileExists(const std::string&);
    void Iniciar();
    string getDireccion();
+   string R_espacio(std::string, int); //reserva espacio
 };

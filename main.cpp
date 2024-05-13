@@ -7,13 +7,12 @@
 int main() {
     StorageManager m;
 
-    DiscoDuro a("8","128","300","800");
-    a.Iniciar();
+    DiscoDuro a(8,128,300,500);
 
     int opcion = 0;
     char tecla;
     do {
-        system("cls");
+        //system("cls");
         std::cout << "% MEGATRON3000\n";
         std::cout << "   Welcone to MEGATRON 3000\n";
         std::cout << "& Agregar tabla" << (opcion == 0 ? " <-" : "") << std::endl;
