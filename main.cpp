@@ -1,6 +1,7 @@
 #include <iostream>
 #include <string>
 #include <conio.h>
+#include <limits>
 #include "Disco.h"
 #include "StorageManager.h"
 
@@ -12,7 +13,9 @@ int main() {
     int opcion = 0;
     char tecla;
     do {
-        //system("cls");
+        //*
+        system("cls");
+        //*/
         std::cout << "% MEGATRON3000\n";
         std::cout << "   Welcone to MEGATRON 3000\n";
         std::cout << "& Agregar tabla" << (opcion == 0 ? " <-" : "") << std::endl;
@@ -34,14 +37,18 @@ int main() {
         } else if (tecla == 13 && opcion == 1) { //  leer tabla
             system("cls");
             std::string b;
+            int c;
             std::cout << "Ingresa el archivo a leer" << std::endl;
             std::cin >> b;
+            std::cout << "Numero de registros a leer" << std::endl;
+            std::cin >> c;
             std::cout << "% MEGATRON3000\n";
-            m.LeerTabla(b);
+            m.LeerTabla(b,c);
         } else if (tecla == 13 && opcion == 2) { // consulta
             char b;
             system("cls");
-            cout.flush();
+            std::cin.clear();
+            //std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
             string a;
             getline(cin, a);
             m.parser(a);

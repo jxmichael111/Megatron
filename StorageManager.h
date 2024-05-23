@@ -8,11 +8,14 @@ private:
     
 public:
     int  VerificarDato(std::string);
-    void LeerTabla(std::string);
+    void AddEsquema(std::string);
+    void LeerTabla(std::string,int);
     void ModificarDatos(std::string);
     void AgregarTabla();
     void printTable(const std::string&);
     void printTable(const std::string&, const std::string&, const std::string&, int);
     void parser(std::string&);
+    void DatoVariable(std::string,int);
+    void DatoFijo(std::string,int);
 };
 
