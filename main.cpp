@@ -8,7 +8,7 @@
 int main() {
     StorageManager m;
 
-    DiscoDuro a(8,128,300,500);
+    DiscoDuro a(4,32,50,50);
 
     int opcion = 0;
     char tecla;
@@ -48,7 +48,7 @@ int main() {
             char b;
             system("cls");
             std::cin.clear();
-            //std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+            std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
             string a;
             getline(cin, a);
             m.parser(a);
