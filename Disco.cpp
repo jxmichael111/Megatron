@@ -37,19 +37,19 @@ void DiscoDuro::crearArchivo(std::string nombreArchivo) {
 void DiscoDuro::estructura() { 
     crearCarpeta(ruta);
 
-    for (int p = 0; p < platos; ++p) {
+    for (int p = 1; p <= platos; ++p) {
         std::string carpetaPlato = ruta + "/plato_" + std::to_string(p);
         crearCarpeta(carpetaPlato);
         
-        for (int s = 0; s < 2; ++s) {
+        for (int s = 1; s <= 2; ++s) {
             std::string carpetaSuperficie = carpetaPlato + "/superficie_" + std::to_string(s);
             crearCarpeta(carpetaSuperficie);
             
-            for (int pi = 0; pi < pistas; ++pi) {
+            for (int pi = 1; pi <= pistas; ++pi) {
                 std::string carpetaPista = carpetaSuperficie + "/pista_" + std::to_string(pi);
                 crearCarpeta(carpetaPista);
                 
-                for (int se = 0; se < sectores; ++se) {
+                for (int se = 1; se <= sectores; ++se) {
                     std::string archivoSector = carpetaPista + "/sector_" + std::to_string(se) + ".txt";
                     crearArchivo(archivoSector);
                 }

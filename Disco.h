@@ -11,10 +11,6 @@ private:
    int pistas;
    int sectores;
    int bloque;
-   int numPlatos;
-   int pistasPorSuperficie;
-   int sectoresPorPista;
-   int bytesPorSector;
    int sectoresPorBloque = 5;
    int sectoresUsados = 0;
       
