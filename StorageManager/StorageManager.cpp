@@ -3,6 +3,7 @@
 #include <sstream>
 #include <string>
 #include <regex>
+#include <vector>
 #include "StorageManager.h"
 
 void StorageManager::printTable(const std::string &filename)
@@ -162,6 +163,78 @@ void StorageManager::DatoFijo(std::string, int)
 {
 }
 
+std::vector<int> StorageManager::ColumnaSize(std::string nombre)
+{
+    std::string direccionEsquema = "C:\\Users\\Michael\\Documents\\University\\5to semestre\\BDII\\Megatron\\esquema.txt";
+    std::vector<int> temp;
+    std::ifstream esquema(direccionEsquema);
+    if (!esquema.is_open())
+    {
+        std::cerr << "Error al abrir el esquema." << std::endl;
+        return temp;  // Devolver un vector vacío en caso de error
+    }
+    std::string linea;
+    while (std::getline(esquema, linea))
+    {
+        if (linea.find(nombre) != std::string::npos)
+        {
+            std::stringstream ss(linea);
+            std::string palabras;
+            std::getline(ss, palabras, '$'); // Saltar el nombre
+            while (std::getline(ss, palabras, '$'))
+            {
+                std::stringstream ss2(palabras);
+                std::string p;
+                std::getline(ss2, p, '#'); // Saltar el primer campo
+                std::getline(ss2, p, '#'); // Saltar el segundo campo
+                std::getline(ss2, p, '#'); // Obtener el tamaño
+                temp.push_back(std::atoi(p.c_str()));
+            }
+        }
+    }
+
+    return temp;    
+}
+std::vector<std::string> StorageManager::ColumnaTipo(std::string nombre)
+{
+    std::string direccionEsquema = "C:\\Users\\Michael\\Documents\\University\\5to semestre\\BDII\\Megatron\\esquema.txt";
+    std::vector<std::string> temp;
+    std::ifstream esquema(direccionEsquema);
+    if (!esquema.is_open())
+    {
+        std::cerr << "Error al abrir el esquema." << std::endl;
+        return temp;  // Devolver un vector vacío en caso de error
+    }
+    std::string linea;
+    while (std::getline(esquema, linea))
+    {
+        if (linea.find(nombre) != std::string::npos)
+        {
+            std::stringstream ss(linea);
+            std::string palabras;
+            std::getline(ss, palabras, '$'); // Saltar el nombre
+            while (std::getline(ss, palabras, '$'))
+            {
+                std::stringstream ss2(palabras);
+                std::string p;
+                std::getline(ss2, p, '#'); // Saltar el primer campo
+                std::getline(ss2, p, '#'); // Saltar el segundo campo
+                temp.push_back(p);
+            }
+        }
+    }
+
+    return temp;    
+}
+
+std::string StorageManager::R_espacio(std::string letter, int num){
+    int aux = num - letter.length();
+    std::string a = letter;
+    for(int i = 0; i < aux; i++)
+        a = a + " ";
+    return a;
+}
+
 int StorageManager::VerificarDato(std::string dato)
 {
     int letra, numero, simbolo, fraccion;
@@ -228,7 +301,7 @@ void StorageManager::AddEsquema(std::string tabla)
     int count = 1;
     while (std::getline(ss, linea, ','))
     {
-        int array[7] = {0,0,0,0,0,0,};
+        int array[7] = {0,0,0,0,0,0,0};
         std::ifstream arc(tabla);
         std::string aux;
         std::getline(arc, aux);
@@ -304,15 +377,15 @@ void StorageManager::AddEsquema(std::string tabla)
         if (indiceMaximo == 0)
             esquema << "#" << "STR" <<"#"<< array[6];
         else if (indiceMaximo == 1)
-            esquema << "#" << "CHAR" <<"#"<< 1;
+            esquema << "#" << "CHAR" <<"#"<< array[6];
         else if (indiceMaximo == 2)
-            esquema << "#" << "INT" <<"#"<< 2;
+            esquema << "#" << "INT" <<"#"<< array[6];
         else if (indiceMaximo == 3)
-            esquema << "#" << "FLOAT" <<"#"<< 4;
+            esquema << "#" << "FLOAT" <<"#"<< array[6];
         else if (indiceMaximo == 4)
-            esquema << "#" << "BOOL" <<"#"<< 1;
+            esquema << "#" << "BOOL" <<"#"<< array[6];
         else
-            esquema << "#" << "VARCHAR" <<"#"<< array[6];
+            esquema << "#" << "STR" <<"#"<< array[6];
         arc.close();
         count++;
     }
@@ -324,6 +397,8 @@ void StorageManager::LeerTabla(std::string tabla,int num)
 {
     AddEsquema(tabla);
     std::string nombre = tabla.substr(0, tabla.length() - 4);
+    std::vector<int> tam = ColumnaSize(nombre);
+    std::vector<std::string> tipo = ColumnaTipo(nombre);
 
     tabla = "C:\\Users\\Michael\\Documents\\University\\5to semestre\\BDII\\Megatron\\" + tabla;
     std::string direccionArchivo = "C:\\Users\\Michael\\Documents\\University\\5to semestre\\BDII\\Megatron\\" + nombre + ".txt";
@@ -352,15 +427,31 @@ void StorageManager::LeerTabla(std::string tabla,int num)
         {
             std::stringstream ss(linea);
             std::string palabras;
-
+            int count = 0;
             while (std::getline(ss, palabras, ','))
             {
-                if (palabras == "" || VerificarDato(palabras) == 5)
-                    Endd << "NULL";
-                else
-                    Endd << palabras;
+                if(palabras[0] == '"'){
+                    std::string temp = palabras;
+                    std::getline(ss, palabras, ',');
+                    temp = temp + palabras;
+                    palabras = temp;
+                }
+                if (palabras == "" || VerificarDato(palabras) == 5){
+                    Endd << R_espacio("", tam[count]);
+                    count++;
+                }
+                else if (tipo[count] == "STR"){
+                    //Endd << palabras;
+                    Endd << R_espacio(palabras, tam[count]);
+                    count++;
+                }
+                else{
+                    Endd << R_espacio(palabras, tam[count]);
+                    count++;
+                }
+                    
 
-                if (ss.peek() != EOF && palabras[0] != '"') // Si no es el final de la línea, añade #
+                if (ss.peek() != EOF) // Si no es el final de la línea, añade #
                     Endd << "#";
             }
             Endd << std::endl;
@@ -374,22 +465,38 @@ void StorageManager::LeerTabla(std::string tabla,int num)
                 break;
             std::stringstream ss(linea);
             std::string palabras;
-
+            int count = 0;
             while (std::getline(ss, palabras, ','))
             {
-                if (palabras == "" || VerificarDato(palabras) == 5)
-                    Endd << "NULL";
-                else
-                    Endd << palabras;
+                if(palabras[0] == '"'){
+                    std::string temp = palabras;
+                    std::getline(ss, palabras, ',');
+                    temp = temp + palabras;
+                    palabras = temp;
+                }
+                if (palabras == "" || VerificarDato(palabras) == 5){
+                    Endd << R_espacio("", tam[count]);
+                    count++;
+                }
+                else if (tipo[count] == "STR"){
+                    
+                    //Endd << palabras;
+                    Endd << R_espacio(palabras, tam[count]);
+                    count++;
+                }
+                else{
+                    Endd <<  R_espacio(palabras, tam[count]);
+                    count++;
+                }
 
-                if (ss.peek() != EOF && palabras[0] != '"') // Si no es el final de la línea, añade #
+                if (ss.peek() != EOF) // Si no es el final de la línea, añade #
                     Endd << "#";
             }
             Endd << std::endl;
         }
         
     }
-
+    
     // Cierra los archivos después de leer/escribir
     Endd.close();
     archivo.close();
