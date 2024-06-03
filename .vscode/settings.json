@@ -69,7 +69,13 @@
         "xmemory": "cpp",
         "xtr1common": "cpp",
         "xutility": "cpp",
-        "regex": "cpp"
+        "regex": "cpp",
+        "bitset": "cpp",
+        "codecvt": "cpp",
+        "list": "cpp",
+        "map": "cpp",
+        "string_view": "cpp",
+        "numbers": "cpp"
     },
     "C_Cpp.errorSquiggles": "disabled"
 }

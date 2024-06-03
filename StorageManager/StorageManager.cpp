@@ -155,12 +155,19 @@ void StorageManager::parser(std::string &texto)
     }
 }
 
-void StorageManager::DatoVariable(std::string, int)
+std::string StorageManager::DatoVariable(std::string letter, int num)
 {
+    int aux = num - letter.length();
+    std::string a = letter;
+    return a;
 }
 
-void StorageManager::DatoFijo(std::string, int)
-{
+std::string StorageManager::DatoFijo(std::string letter, int num){
+    int aux = num - letter.length();
+    std::string a = letter;
+    for(int i = 0; i < aux; i++)
+        a = a + " ";
+    return a;
 }
 
 std::vector<int> StorageManager::ColumnaSize(std::string nombre)
@@ -227,13 +234,6 @@ std::vector<std::string> StorageManager::ColumnaTipo(std::string nombre)
     return temp;    
 }
 
-std::string StorageManager::R_espacio(std::string letter, int num){
-    int aux = num - letter.length();
-    std::string a = letter;
-    for(int i = 0; i < aux; i++)
-        a = a + " ";
-    return a;
-}
 
 int StorageManager::VerificarDato(std::string dato)
 {
@@ -437,16 +437,16 @@ void StorageManager::LeerTabla(std::string tabla,int num)
                     palabras = temp;
                 }
                 if (palabras == "" || VerificarDato(palabras) == 5){
-                    Endd << R_espacio("", tam[count]);
+                    Endd << DatoFijo("", tam[count]);
                     count++;
                 }
                 else if (tipo[count] == "STR"){
                     //Endd << palabras;
-                    Endd << R_espacio(palabras, tam[count]);
+                    Endd << DatoFijo(palabras, tam[count]);
                     count++;
                 }
                 else{
-                    Endd << R_espacio(palabras, tam[count]);
+                    Endd << DatoFijo(palabras, tam[count]);
                     count++;
                 }
                     
@@ -475,17 +475,17 @@ void StorageManager::LeerTabla(std::string tabla,int num)
                     palabras = temp;
                 }
                 if (palabras == "" || VerificarDato(palabras) == 5){
-                    Endd << R_espacio("", tam[count]);
+                    Endd << DatoFijo("", tam[count]);
                     count++;
                 }
                 else if (tipo[count] == "STR"){
                     
                     //Endd << palabras;
-                    Endd << R_espacio(palabras, tam[count]);
+                    Endd << DatoFijo(palabras, tam[count]);
                     count++;
                 }
                 else{
-                    Endd <<  R_espacio(palabras, tam[count]);
+                    Endd << DatoFijo(palabras, tam[count]);
                     count++;
                 }
 

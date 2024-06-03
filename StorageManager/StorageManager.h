@@ -16,10 +16,9 @@ public:
     void printTable(const std::string&);
     void printTable(const std::string&, const std::string&, const std::string&, int); /*modificar para que reconozca mas columnas*/
     void parser(std::string&);  /*incluir analisador lexico*/
-    void DatoVariable(std::string,int);
-    void DatoFijo(std::string,int);
+    std::string DatoVariable(std::string,int);
+    std::string DatoFijo(std::string,int);
     std::vector<int> ColumnaSize(std::string);
     std::vector<std::string> ColumnaTipo(std::string);
-    std::string R_espacio(std::string, int);
 };
 

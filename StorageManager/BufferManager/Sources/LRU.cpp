@@ -1,5 +1,6 @@
-#include "Replacer.h"
 #include <iostream>
+#include <algorithm>
+#include "LRU.h"
 
 int Replacer::findFrame() {
     if (!lruQueue.empty()) {
