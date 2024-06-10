@@ -1,33 +1,43 @@
 #include "Frame.h"
 
-Frame::Frame() : pageID(-1), isPinned(false), dirtyFlag(false), pinCount(0), lastUsed(0) {
-    // constructor que inicializa un frame con valores por defecto
+Frame::Frame(int capacidad_) {
+    this->capacidad = capacidad_;
+    this->data = "";
+    this->isPinned = false ;
+    this->dirtyFlag = false ;
+    this->pinCount = 0;
 }
 
 void Frame::pin() {
-    // marca el frame como "pin", indicando que está en uso
-    isPinned = true;
-    pinCount++;  // incrementa el contador de pin para este frame
+    if(!pinCount)
+        isPinned = true;
+    pinCount++; 
 }
 
 void Frame::unpin() {
     if (pinCount > 0) {
-        pinCount--;  // decrementar el contador de pines
+        pinCount--; 
         if (pinCount == 0) {
-            isPinned = false;  // si no hay más pines, marcar como no "pinned"
+            isPinned = false;
         }
     }
 }
 
-void Frame::setDirty(bool flag) {
-    // establece la bandera de suciedad para el frame
-    dirtyFlag = flag;  // establece la bandera a true o false según el flag proporcionado
+void Frame::setDirty() {
+    dirtyFlag = true;
 }
 
 void Frame::reset() {
-    pageID = -1; // manejar si esta o no en frame
     isPinned = false;
     dirtyFlag = false;
     pinCount = 0;
-    lastUsed = 0;  // restablece el tiempo de último uso
+    data.clear();
+}
+
+void Frame::SetData(std::string registro) {
+    data.push_back(registro);
+}
+
+std::vector<std::string> Frame::GetData() {
+    return data;
 }
