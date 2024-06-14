@@ -4,11 +4,25 @@
 
 class BufferPool {
 private:
-    std::vector<Frame> BufferFrame;
+    std::vector<Frame> bufferFrames;
+    int currentIndex;
 public:
     BufferPool(int, int);
-    Frame* GetFrame(int frameId);
-    void PinFrame(int frameId);
-    void UnpinFrame(int frameId);
+    int FindUnpinnedFrame();
+    std::vector<Frame> GetBufferFrame();
+    Frame* GetFrame(int);
+    void PinFrame(int);
+    void UnpinFrame(int);
+    void ReleaseFrame(int);
+    void DirtyFrame(int);
     void ResetBufferPool();
+    bool AllFramesInUse();
+
+    void UpdateIndex();
+    int GetIndex();
+
+    int LRU();
+    int CLOCK();
+
+    
 };

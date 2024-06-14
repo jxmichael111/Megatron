@@ -6,7 +6,7 @@
 #include "StorageManager.h"
 #include "BufferManager.h"
 
-//*
+/*
 int main() {
     StorageManager m;
 
@@ -66,56 +66,42 @@ int main() {
     return 0;
 }
 //*/
-//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-/*
-void bufferOperation(const std::string& operation, int pageID, BufferManager& manager) {
+//---------------------------FUNCIONAMIENTO DEL BUFFER MANAGER---------------------------
+
+
+void bufferOperation(int pageID, const char& operation, BufferManager& manager) {
     try {
-        Frame& frame = manager.requestPage(pageID);
-        if (operation == "W") {
-            frame.setDirty(true);
-            std::cout << "Página " << pageID << " escrita y marcada como sucia.\n";
+        if (operation == 'W' || operation == 'w') {
+            manager.requestPage(pageID,operation);
+            std::cout << "Pagina " << pageID << " escrita y marcada como sucia.\n";
         }
-        else if (operation == "L") {
-            std::cout << "Página " << pageID << " leída.\n";
+        else if (operation == 'L' || operation == 'l') {
+            manager.requestPage(pageID,operation);
+            std::cout << "Pagina " << pageID << " leida.\n";
         }
-        manager.releasePage(pageID);  // Despinnea la página independientemente de la operación para liberar el recurso
+        //manager.releasePage(pageID);  // Despinnea la página independientemente de la operación para liberar el recurso
     }
     catch (const std::exception& e) {
-        std::cout << "Error al procesar la página: " << e.what() << "\n";
+        std::cout << "Error al procesar la pagina: " << e.what() << "\n";
     }
 }
-
-void loadPageToMemory(int pageID, BufferManager& manager) {
-    if (!manager.checkPage(pageID)) {
-        manager.setPage(pageID);
-        std::cout << "Página " << pageID << " cargada satisfactoriamente en la memoria.\n";
-    }
-    else {
-        std::cout << "Página " << pageID << " ya está en memoria.\n";
-    }
-}
-
 void releasePageFromMemory(int pageID, BufferManager& manager) {
-    if (manager.checkPage(pageID)) {
         manager.releasePage(pageID);
-        std::cout << "Página " << pageID << " liberada de la memoria.\n";
-    }
-    else {
-        std::cout << "Página " << pageID << " no está en memoria o ya fue liberada.\n";
-    }
+
 }
+
 
 void displayMenu(BufferManager& manager) {
     int choice, pageID;
-    std::string operation;
+    char operation;
 
     while (true) {
         std::cout << "\n########  GESTION DE MEMORIA  ########\n";
         std::cout << "1. Solicitar pagina (Lectura/Escritura)\n";
-        std::cout << "2. Cargar pagina del disco a la memoria\n";
-        std::cout << "3. Liberar pagina de la memoria\n";
-        std::cout << "4. Imprimir tabla de paginas\n";
-        std::cout << "5. Salir\n";
+
+        std::cout << "2. Imprimir tabla de paginas\n";
+        std::cout << "3. Iliminar tabla de paginas\n";
+        std::cout << "4. Salir\n";
         std::cout << "Seleccione una opcion: ";
         std::cin >> choice;
 
@@ -125,37 +111,27 @@ void displayMenu(BufferManager& manager) {
             std::cin >> pageID;
             std::cout << "Ingrese operacion (L para leer, W para escribir): ";
             std::cin >> operation;
-            if (operation == "L" || operation == "W") {
-                bufferOperation(operation, pageID, manager);
-            }
-            else {
-                std::cout << "Operacion inválida. Intente de nuevo.\n";
-            }
+            bufferOperation(pageID, operation, manager);
             break;
         case 2:
-            std::cout << "Ingrese ID de pagina para cargar: ";
-            std::cin >> pageID;
-            loadPageToMemory(pageID, manager);
+            manager.printPageTable();
             break;
         case 3:
-            std::cout << "Ingrese ID de pagina para liberar: ";
+        std::cout << "Ingrese ID de pagina: ";
             std::cin >> pageID;
             releasePageFromMemory(pageID, manager);
             break;
         case 4:
-            manager.printPageTable();
-            break;
-        case 5:
             std::cout << "Saliendo del programa...\n";
             return;
         default:
-            std::cout << "Opcion no válida. Intente de nuevo.\n";
+            std::cout << "Opcion no valida. Intente de nuevo.\n";
         }
     }
 }
 
 int main() {
-    BufferManager bufferManager(5);  // Suponiendo un tamaño del buffer de 5 frames
+    BufferManager bufferManager(4, 40);  // Suponiendo un tamaño del buffer de 5 frames
     displayMenu(bufferManager);
     return 0;
 }

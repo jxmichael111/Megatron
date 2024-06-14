@@ -1,78 +1,146 @@
-#include "BufferManager.h"
 #include <iostream>
 #include <cassert>
 #include "BufferManager.h"
 
-BufferManager::BufferManager(int size) : bufferPool(size), replacer(), pageTable() {
-    // A�ade todos los frames al Replacer inicialmente
-    for (int i = 0; i < size; i++) {
-        replacer.addToQueue(i);
-    }
-}
+BufferManager::BufferManager(int BufferSize, int capacidad) : BufferPool(BufferSize, capacidad), PageTable() {}
 
-void BufferManager::setPage(int pageID) {
-    int frameID = pageTable.getFrame(pageID);
-    if (frameID != -1) {
-        std::cout << "Page already in memory.\n";
-        return;
+void BufferManager::requestPage(int pageID, char operation) {
+    if (BufferPool.AllFramesInUse()) {
+        char strategy;
+        std::cout << "El buffer pool esta lleno. Por favor, seleccione la estrategia de reemplazo ('L' para LRU, 'C' para CLOCK): ";
+        std::cin >> strategy;      
+        if (strategy != 'L' && strategy != 'C') {
+            std::cout << "Estrategia de reemplazo no valida. Utilizando LRU por defecto." << std::endl;
+            strategy = 'L'; 
+        }
+        int aux;
+        if (strategy == 'L') {
+            
+            aux = BufferPool.LRU();
+            std::cout << aux << std::endl;
+            for (const auto& entry : PageTable.pageMap) {
+                if(entry.second == aux)
+                    aux = entry.first;
+            }
+            std::cout << aux << std::endl;
+            releasePage(aux);
+        } else {
+            aux = BufferPool.CLOCK();
+            for (const auto& entry : PageTable.pageMap) {
+                if(entry.second == aux)
+                    aux = entry.first;
+            }
+            releasePage(aux);
+        }
     }
-    frameID = replacer.findFrame();
-    if (frameID == -1) {
-        std::cout << "No available frames.\n";
-        return;
-    }
-    if (bufferPool.getFrame(frameID).dirtyFlag) {
-        // Aseg�rate de manejar la escritura en disco antes de sobreescribir
-        std::cout << "Writing old page " << bufferPool.getFrame(frameID).pageID << " to disk.\n";
-    }
-    bufferPool.getFrame(frameID).reset();
-    bufferPool.setPage(pageID, frameID);
-    pageTable.setFrame(pageID, frameID);
-    bufferPool.getFrame(frameID).pin();
-    std::cout << "Page " << pageID << " loaded into frame " << frameID << ".\n";
-}
 
-Frame& BufferManager::requestPage(int pageID) {
-    int frameID = pageTable.getFrame(pageID);
-    if (frameID == -1) {
-        setPage(pageID);  // Si no está en memoria, la carga.
-        frameID = pageTable.getFrame(pageID);
+    if (operation == 'L' || operation =='l') {
+        if (!PageTable.IsPageMapped(pageID)) {
+            int frameID = BufferPool.FindUnpinnedFrame();
+            PageTable.MapPageToFrame(pageID, frameID);
+            BufferPool.PinFrame(frameID);
+            for (const auto& entry : PageTable.pageMap) {
+                if (pageID != entry.first){
+                    Frame* frame = BufferPool.GetFrame(entry.second);
+                    frame->increment();
+                    frame->refOn();
+                }
+                else {
+                    Frame* frame = BufferPool.GetFrame(entry.second);
+                    frame->used();
+                    frame->refOn();
+                    BufferPool.UpdateIndex();
+                }
+            }
+        } else {
+            int frameID = PageTable.pageMap[pageID];
+            BufferPool.PinFrame(frameID);
+            for (const auto& entry : PageTable.pageMap) {
+                if (pageID != entry.first){
+                    Frame* frame = BufferPool.GetFrame(entry.second);
+                    frame->increment();
+                    frame->refOn();
+                }
+                else {
+                    Frame* frame = BufferPool.GetFrame(entry.second);
+                    frame->used();
+                    frame->refOn();
+                    BufferPool.UpdateIndex();
+                }
+            }
+        }
     }
-    Frame& frame = bufferPool.getFrame(frameID);
-    frame.pin();  // Marca el frame como "pin" e incrementa el pinCount.
-    //bufferPool.updateLastUsed(frameID);  // Actualiza el contador de último uso al acceder a la página.
-    bufferPool.updateCount(frameID);
-    bufferPool.increment(frameID);
-    return frame;
+    else if (operation == 'W' || operation =='w'){
+        if (!PageTable.IsPageMapped(pageID)) {
+            int frameID = BufferPool.FindUnpinnedFrame();
+            PageTable.MapPageToFrame(pageID, frameID);
+            BufferPool.PinFrame(frameID);
+            BufferPool.DirtyFrame(frameID);
+            for (const auto& entry : PageTable.pageMap) {
+                if (pageID != entry.first){
+                    Frame* frame = BufferPool.GetFrame(entry.second);
+                    frame->increment();
+                    frame->refOn();
+                }
+                else {
+                    Frame* frame = BufferPool.GetFrame(entry.second);
+                    frame->used();
+                    frame->refOn();
+                    BufferPool.UpdateIndex();
+                }
+            }
+        } else {
+            // La página ya está mapeada, actualizar el dato en el buffer pool
+            int frameID = PageTable.pageMap[pageID];
+            BufferPool.PinFrame(frameID);
+            BufferPool.DirtyFrame(frameID);
+            for (const auto& entry : PageTable.pageMap) {
+                if (pageID != entry.first){
+                    Frame* frame = BufferPool.GetFrame(entry.second);
+                    frame->increment();
+                    frame->refOn();
+                }
+                else {
+                    Frame* frame = BufferPool.GetFrame(entry.second);
+                    frame->used();
+                    frame->refOn();
+                    BufferPool.UpdateIndex();
+                }
+            }
+        }
+    }
 }
 
 void BufferManager::releasePage(int pageID) {
-    int frameID = pageTable.getFrame(pageID);
-    if (frameID != -1) {
-        Frame& frame = bufferPool.getFrame(frameID);
-        frame.unpin();
-        if (frame.pinCount == 0) {
-            replacer.addToQueue(frameID); // Añade de nuevo al replacer si no está en uso.
-            pageTable.removePage(pageID); // Elimina la página del PageTable.
-            frame.reset(); // Resetear el frame para eliminar cualquier dato residual.
-            std::cout << "Página " << pageID << " completamente liberada de la memoria.\n";
-        }
+    int frameID = PageTable.pageMap[pageID];
+    Frame* frame = BufferPool.GetFrame(frameID);
+
+    if (frame->GetPinCount() == 0) {
+        Frame* frame = BufferPool.GetFrame(frameID);
+        frame->reset();
+        BufferPool.ReleaseFrame(frameID);
+        PageTable.UnmapPage(pageID);
+        BufferPool.UpdateIndex(); // Opcionalmente actualizar el índice para la próxima política CLOCK
+
+        std::cout << "La pagina " << pageID << " ha sido liberada del marco " << frameID << "." << std::endl;
     }
-    else {
-        std::cout << "Página " << pageID << " no encontrada en memoria.\n";
+    else{
+        Frame* frame = BufferPool.GetFrame(frameID);
+        frame->unpin();
     }
 }
 
-bool BufferManager::checkPage(int pageID) {
-    return pageTable.getFrame(pageID) != -1;
-}
+
 
 void BufferManager::printPageTable() {
-    std::cout << "# Frame ID\t- Page ID\t- Dirty Bit\t- Pin Count\t- Last Used\n";
-    for (auto& entry : pageTable.pageMap) {
-        Frame& frame = bufferPool.getFrame(entry.second);
-        std::cout <<"# "<< entry.second << "\t\t- " << entry.first << "\t\t- "
-            << (frame.dirtyFlag ? "1" : "0") << "\t\t- "
-            << frame.pinCount << "\t\t- " << frame.lastUsed << "\t\t\n";
+    std::cout << "# Frame ID\t- Page ID\t- Dirty Bit\t- Pin Count\t- Last Used\t- Ref. Bit\n";
+    for (const auto& entry : PageTable.pageMap) {
+        Frame* frame = BufferPool.GetFrame(entry.second);
+        std::cout << "# " << entry.second << "\t\t- " << entry.first << "\t\t- "
+                  << (frame->GetDirty() ? "1" : "0") << "\t\t- "
+                  << frame->GetPinCount() << "\t\t- " << frame->GetLastUsed() << "\t\t- " << frame->GetRefBit() << "\t\t\n";
     }
 }
+
+
+

@@ -9,7 +9,26 @@ private:
     bool isPinned;
     bool dirtyFlag;
     int pinCount;
+    int lastUsed; //LRU
+    bool refBit; //CLOCK
 public:
+
+    std::vector<std::string> GetData();
+    /*
+    */
+    bool GetDirty();
+    
+    int GetPinCount() const;
+
+    bool GetIsPinned();
+
+    int GetLastUsed();
+
+    bool GetRefBit();
+    
+    void SetData(std::string);
+    /*
+    */
     Frame(int);
     /*
     Constructor de la clase Frame. Inicializa un marco con valores por defecto: el ID de página se establece en -1,
@@ -34,10 +53,11 @@ public:
     /*
     Esta función restablece todos los atributos del marco a sus valores por defecto.
     */
-    void SetData(std::string);
-    /*
-    */
-    std::vector<std::string> GetData();
-    /*
-    */
+
+    void increment();
+    void refOn();
+    void refOff();
+    int getLastUsed();
+    int getRefBit();
+    void used();
 };
