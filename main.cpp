@@ -89,6 +89,9 @@ void releasePageFromMemory(int pageID, BufferManager& manager) {
         manager.releasePage(pageID);
 
 }
+void pinear(int pageID, BufferManager& manager) {
+    manager.PinearPagina(pageID);
+}
 
 
 void displayMenu(BufferManager& manager) {
@@ -100,8 +103,9 @@ void displayMenu(BufferManager& manager) {
         std::cout << "1. Solicitar pagina (Lectura/Escritura)\n";
 
         std::cout << "2. Imprimir tabla de paginas\n";
-        std::cout << "3. Iliminar tabla de paginas\n";
-        std::cout << "4. Salir\n";
+        std::cout << "3. Liberar pagina\n";
+        std::cout << "4. Pinear pagina\n";
+        std::cout << "5. Salir\n";
         std::cout << "Seleccione una opcion: ";
         std::cin >> choice;
 
@@ -122,6 +126,11 @@ void displayMenu(BufferManager& manager) {
             releasePageFromMemory(pageID, manager);
             break;
         case 4:
+        std::cout << "Ingrese ID de pagina: ";
+            std::cin >> pageID;
+            pinear(pageID, manager);
+            break;
+        case 5:
             std::cout << "Saliendo del programa...\n";
             return;
         default:
@@ -131,7 +140,10 @@ void displayMenu(BufferManager& manager) {
 }
 
 int main() {
-    BufferManager bufferManager(4, 40);  // Suponiendo un tamaño del buffer de 5 frames
+    int num;
+    std::cout << "cuantas paginas quiere: ";
+    std::cin>>num;
+    BufferManager bufferManager(num, 40);  // Suponiendo un tamaño del buffer de 5 frames
     displayMenu(bufferManager);
     return 0;
 }

@@ -40,6 +40,10 @@ public:
     Esta función marca el marco como "pinneado", lo que indica que está en uso. Incrementa el contador de "pines" 
     para este marco.
     */
+    void IncrementCount();
+
+    void DecrementCount();
+
     void unpin();
     /*
     Esta función reduce el contador de "pines" para el marco. Si el contador de "pines" llega a cero, marca el marco 
@@ -58,6 +62,5 @@ public:
     void refOn();
     void refOff();
     int getLastUsed();
-    int getRefBit();
     void used();
 };

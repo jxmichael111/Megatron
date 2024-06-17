@@ -5,7 +5,7 @@
 BufferManager::BufferManager(int BufferSize, int capacidad) : BufferPool(BufferSize, capacidad), PageTable() {}
 
 void BufferManager::requestPage(int pageID, char operation) {
-    if (BufferPool.AllFramesInUse()) {
+    if (PageTable.GetSize() == BufferPool.GetSize() && !PageTable.IsPageMapped(pageID)) {
         char strategy;
         std::cout << "El buffer pool esta lleno. Por favor, seleccione la estrategia de reemplazo ('L' para LRU, 'C' para CLOCK): ";
         std::cin >> strategy;      
@@ -38,7 +38,7 @@ void BufferManager::requestPage(int pageID, char operation) {
         if (!PageTable.IsPageMapped(pageID)) {
             int frameID = BufferPool.FindUnpinnedFrame();
             PageTable.MapPageToFrame(pageID, frameID);
-            BufferPool.PinFrame(frameID);
+            BufferPool.IncremetFrame(frameID);
             for (const auto& entry : PageTable.pageMap) {
                 if (pageID != entry.first){
                     Frame* frame = BufferPool.GetFrame(entry.second);
@@ -54,7 +54,7 @@ void BufferManager::requestPage(int pageID, char operation) {
             }
         } else {
             int frameID = PageTable.pageMap[pageID];
-            BufferPool.PinFrame(frameID);
+            BufferPool.IncremetFrame(frameID);
             for (const auto& entry : PageTable.pageMap) {
                 if (pageID != entry.first){
                     Frame* frame = BufferPool.GetFrame(entry.second);
@@ -74,7 +74,7 @@ void BufferManager::requestPage(int pageID, char operation) {
         if (!PageTable.IsPageMapped(pageID)) {
             int frameID = BufferPool.FindUnpinnedFrame();
             PageTable.MapPageToFrame(pageID, frameID);
-            BufferPool.PinFrame(frameID);
+            BufferPool.IncremetFrame(frameID);
             BufferPool.DirtyFrame(frameID);
             for (const auto& entry : PageTable.pageMap) {
                 if (pageID != entry.first){
@@ -92,7 +92,7 @@ void BufferManager::requestPage(int pageID, char operation) {
         } else {
             // La página ya está mapeada, actualizar el dato en el buffer pool
             int frameID = PageTable.pageMap[pageID];
-            BufferPool.PinFrame(frameID);
+            BufferPool.IncremetFrame(frameID);
             BufferPool.DirtyFrame(frameID);
             for (const auto& entry : PageTable.pageMap) {
                 if (pageID != entry.first){
@@ -114,8 +114,20 @@ void BufferManager::requestPage(int pageID, char operation) {
 void BufferManager::releasePage(int pageID) {
     int frameID = PageTable.pageMap[pageID];
     Frame* frame = BufferPool.GetFrame(frameID);
-
+    
     if (frame->GetPinCount() == 0) {
+        if (frame->GetDirty()) {
+            char c;
+            std::cout << "Desea guardar la pagina S/N" << std::endl;
+            std::cin>>c; 
+            if(c == 'N') {
+                std::cout << "pagina no guardada" << std::endl;
+            }
+            else {
+                std::cout << "pagina no guardada" << std::endl;
+            }
+        }
+
         Frame* frame = BufferPool.GetFrame(frameID);
         frame->reset();
         BufferPool.ReleaseFrame(frameID);
@@ -126,21 +138,28 @@ void BufferManager::releasePage(int pageID) {
     }
     else{
         Frame* frame = BufferPool.GetFrame(frameID);
-        frame->unpin();
+        frame->DecrementCount();
     }
 }
 
 
 
 void BufferManager::printPageTable() {
-    std::cout << "# Frame ID\t- Page ID\t- Dirty Bit\t- Pin Count\t- Last Used\t- Ref. Bit\n";
+    std::cout << "# Frame ID\t- Page ID\t- Dirty Bit\t- Pin Count\t- Pinned\t- Last Used\t- Ref. Bit\n";
     for (const auto& entry : PageTable.pageMap) {
         Frame* frame = BufferPool.GetFrame(entry.second);
         std::cout << "# " << entry.second << "\t\t- " << entry.first << "\t\t- "
                   << (frame->GetDirty() ? "1" : "0") << "\t\t- "
-                  << frame->GetPinCount() << "\t\t- " << frame->GetLastUsed() << "\t\t- " << frame->GetRefBit() << "\t\t\n";
+                  << frame->GetPinCount() << "\t\t- " << frame->GetIsPinned() << "\t\t- " << frame->GetLastUsed() << "\t\t- " << frame->GetRefBit() << "\t\t\n";
     }
 }
-
-
-
+void BufferManager::PinearPagina(int pageID) {
+    auto it = PageTable.pageMap.find(pageID);
+    if (it != PageTable.pageMap.end()) {
+        int frameID = it->second;
+        Frame* frame = BufferPool.GetFrame(frameID);
+        frame->pin();
+    } else {
+        std::cout << "La pagina no se encuentra" << std::endl;
+    }
+}

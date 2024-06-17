@@ -11,18 +11,24 @@ Frame::Frame(int capacidad_) {
 }
 
 void Frame::pin() {
-    if(!pinCount)
         isPinned = true;
+}
+
+void Frame::IncrementCount() {
     pinCount++; 
 }
 
-void Frame::unpin() {
+void Frame::DecrementCount() {
     if (pinCount > 0) {
         pinCount--; 
 //        if (pinCount == 0) {
 //            isPinned = false;
 //        }
     }
+}
+
+void Frame::unpin() {
+    isPinned = false;
 }
 
 void Frame::setDirty() {
@@ -82,9 +88,6 @@ int Frame::getLastUsed(){
     return lastUsed;
 }
 
-int Frame::getRefBit(){
-    return refBit;
-}
 
 void Frame::used(){
     lastUsed = 1;

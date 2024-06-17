@@ -11,7 +11,7 @@ BufferPool::BufferPool(int size, int CapacityFrame) {
 
 int BufferPool::FindUnpinnedFrame() {
     for (int i = 0; i < bufferFrames.size(); ++i) {
-        if (!bufferFrames[i].GetIsPinned()) {
+        if (!bufferFrames[i].GetPinCount() && !bufferFrames[i].GetRefBit()) {
             return i;
         }
     }
@@ -41,6 +41,20 @@ void BufferPool::UnpinFrame(int frameID) {
     Frame* frame = GetFrame(frameID);
     if (frame) {
         frame->unpin();
+    }
+}
+
+void BufferPool::IncremetFrame(int frameID) {
+    Frame* frame = GetFrame(frameID);
+    if (frame) {
+        frame->IncrementCount();
+    }   
+}
+
+void BufferPool::DecremetFrame(int frameID) {
+    Frame* frame = GetFrame(frameID);
+    if (frame) {
+        frame->DecrementCount();
     }
 }
 
@@ -80,6 +94,10 @@ void BufferPool::UpdateIndex() {
 
 int BufferPool::GetIndex() {
     return currentIndex;
+}
+
+int BufferPool::GetSize() {
+    return bufferFrames.size();
 }
 
 int BufferPool::LRU() {
