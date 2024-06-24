@@ -105,7 +105,8 @@ void displayMenu(BufferManager& manager) {
         std::cout << "2. Imprimir tabla de paginas\n";
         std::cout << "3. Liberar pagina\n";
         std::cout << "4. Pinear pagina\n";
-        std::cout << "5. Salir\n";
+        std::cout << "5. Mostrar requerimientos\n";
+        std::cout << "6. Salir\n";
         std::cout << "Seleccione una opcion: ";
         std::cin >> choice;
 
@@ -121,16 +122,19 @@ void displayMenu(BufferManager& manager) {
             manager.printPageTable();
             break;
         case 3:
-        std::cout << "Ingrese ID de pagina: ";
+            std::cout << "Ingrese ID de pagina: ";
             std::cin >> pageID;
             releasePageFromMemory(pageID, manager);
             break;
         case 4:
-        std::cout << "Ingrese ID de pagina: ";
+            std::cout << "Ingrese ID de pagina: ";
             std::cin >> pageID;
             pinear(pageID, manager);
             break;
         case 5:
+            manager.PrintRequest();
+            break;
+        case 6:
             std::cout << "Saliendo del programa...\n";
             return;
         default:

@@ -39,6 +39,7 @@ void BufferManager::requestPage(int pageID, char operation) {
             int frameID = BufferPool.FindUnpinnedFrame();
             PageTable.MapPageToFrame(pageID, frameID);
             BufferPool.IncremetFrame(frameID);
+            
             for (const auto& entry : PageTable.pageMap) {
                 if (pageID != entry.first){
                     Frame* frame = BufferPool.GetFrame(entry.second);
@@ -50,11 +51,13 @@ void BufferManager::requestPage(int pageID, char operation) {
                     frame->used();
                     frame->refOn();
                     BufferPool.UpdateIndex();
+                    frame->SetPinCount(operation);
                 }
             }
         } else {
             int frameID = PageTable.pageMap[pageID];
             BufferPool.IncremetFrame(frameID);
+            
             for (const auto& entry : PageTable.pageMap) {
                 if (pageID != entry.first){
                     Frame* frame = BufferPool.GetFrame(entry.second);
@@ -66,6 +69,7 @@ void BufferManager::requestPage(int pageID, char operation) {
                     frame->used();
                     frame->refOn();
                     BufferPool.UpdateIndex();
+                    frame->SetPinCount(operation);
                 }
             }
         }
@@ -76,6 +80,7 @@ void BufferManager::requestPage(int pageID, char operation) {
             PageTable.MapPageToFrame(pageID, frameID);
             BufferPool.IncremetFrame(frameID);
             BufferPool.DirtyFrame(frameID);
+            
             for (const auto& entry : PageTable.pageMap) {
                 if (pageID != entry.first){
                     Frame* frame = BufferPool.GetFrame(entry.second);
@@ -87,9 +92,11 @@ void BufferManager::requestPage(int pageID, char operation) {
                     frame->used();
                     frame->refOn();
                     BufferPool.UpdateIndex();
+                    frame->SetPinCount(operation);
                 }
             }
-        } else {
+        } 
+        else {
             // La página ya está mapeada, actualizar el dato en el buffer pool
             int frameID = PageTable.pageMap[pageID];
             BufferPool.IncremetFrame(frameID);
@@ -105,6 +112,7 @@ void BufferManager::requestPage(int pageID, char operation) {
                     frame->used();
                     frame->refOn();
                     BufferPool.UpdateIndex();
+                    frame->SetPinCount(operation);
                 }
             }
         }
@@ -116,7 +124,7 @@ void BufferManager::releasePage(int pageID) {
     Frame* frame = BufferPool.GetFrame(frameID);
     
     if (frame->GetPinCount() == 0) {
-        if (frame->GetDirty()) {
+        if (frame->GetDirty() ) {
             char c;
             std::cout << "Desea guardar la pagina S/N" << std::endl;
             std::cin>>c; 
@@ -139,6 +147,7 @@ void BufferManager::releasePage(int pageID) {
     else{
         Frame* frame = BufferPool.GetFrame(frameID);
         frame->DecrementCount();
+        frame->ReleasePinCount();
     }
 }
 
@@ -161,5 +170,13 @@ void BufferManager::PinearPagina(int pageID) {
         frame->pin();
     } else {
         std::cout << "La pagina no se encuentra" << std::endl;
+    }
+}
+
+void BufferManager::PrintRequest() {
+    for (const auto& entry : PageTable.pageMap) {
+        Frame* frame = BufferPool.GetFrame(entry.second);
+        std::cout << "Los requerimientos del frame " << entry.second << " son:" << std::endl;
+        frame->PrintPinCount();
     }
 }

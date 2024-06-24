@@ -1,7 +1,29 @@
 #include <string>
 #include "Frame.h"
 
-Frame::Frame(int capacidad_) {
+void Frame::SetPinCount(char operacion) {
+    operacion = operacion - ('a' - 'A');
+    countPin.push(operacion);
+}
+
+void Frame::ReleasePinCount() {
+    if (!countPin.empty()) {
+        countPin.pop();
+    }
+}
+
+void Frame::PrintPinCount() {
+    std::queue<char> tempQueue = countPin; 
+    while (!tempQueue.empty()) {
+        char entry = tempQueue.front();
+        std::cout << entry << " ";
+        tempQueue.pop();
+    }
+    std::cout<< std::endl;
+}
+
+Frame::Frame(int capacidad_)
+{
     this->capacidad = capacidad_;
     this->isPinned = false ;
     this->dirtyFlag = false ;
@@ -21,9 +43,9 @@ void Frame::IncrementCount() {
 void Frame::DecrementCount() {
     if (pinCount > 0) {
         pinCount--; 
-//        if (pinCount == 0) {
-//            isPinned = false;
-//        }
+//          if (pinCount == 0) {
+//              isPinned = false;
+//          }
     }
 }
 
@@ -35,7 +57,8 @@ void Frame::setDirty() {
     dirtyFlag = true;
 }
 
-void Frame::reset() {
+void Frame::
+reset() {
     isPinned = false;
     dirtyFlag = false;
     pinCount = 0;
@@ -68,7 +91,7 @@ bool Frame::GetDirty() {
     return dirtyFlag;
 }
 
-int Frame::GetPinCount() const{
+int Frame::GetPinCount() {
     return pinCount;
 }
 

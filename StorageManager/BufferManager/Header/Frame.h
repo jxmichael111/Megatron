@@ -1,6 +1,8 @@
 #pragma once
+#include <iostream>
 #include <vector>
 #include <string>
+#include <queue>
 
 class Frame {
 private:
@@ -9,6 +11,7 @@ private:
     bool isPinned;
     bool dirtyFlag;
     int pinCount;
+    std::queue<char> countPin;
     int lastUsed; //LRU
     bool refBit; //CLOCK
 public:
@@ -18,7 +21,7 @@ public:
     */
     bool GetDirty();
     
-    int GetPinCount() const;
+    int GetPinCount();
 
     bool GetIsPinned();
 
@@ -29,6 +32,12 @@ public:
     void SetData(std::string);
     /*
     */
+    void SetPinCount(char);
+
+    void ReleasePinCount();
+
+    void PrintPinCount();
+
     Frame(int);
     /*
     Constructor de la clase Frame. Inicializa un marco con valores por defecto: el ID de página se establece en -1,

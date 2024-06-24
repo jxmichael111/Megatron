@@ -46,6 +46,6 @@ public:
     Esta función imprime la tabla de páginas junto con información relevante sobre cada entrada, como el ID de marco, 
     el ID de página, el bit de suciedad, el recuento de "pin" y el último uso.
     */  
-   void PinearPagina(int);
-
+    void PinearPagina(int);
+    void PrintRequest();
 };
