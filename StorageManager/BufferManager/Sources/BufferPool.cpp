@@ -30,6 +30,22 @@ Frame* BufferPool::GetFrame(int frameID) {
     return nullptr;
 }
 
+void BufferPool::SetData(std::vector<std::string> Data, int frameID) {
+    Frame* frame = GetFrame(frameID);
+    if (frame) {
+        for (int i = 0; i < Data.size(); i++){
+            frame->SetData(Data[i]);
+        }
+    }
+}
+
+void BufferPool::mostrarData(int frameID) {
+    Frame* frame = GetFrame(frameID);
+    if (frame) {
+        frame->ViewData();
+    }
+}
+
 void BufferPool::PinFrame(int frameID) {
     Frame* frame = GetFrame(frameID);
     if (frame) {
@@ -81,7 +97,7 @@ void BufferPool::ResetBufferPool() {
 
 bool BufferPool::AllFramesInUse() {
     for (auto& frame : bufferFrames) {
-        if (!frame.GetIsPinned()) {
+        if (!frame.GetPinCount()) {
             return false;
         }
     }
@@ -112,7 +128,7 @@ int BufferPool::LRU() {
     }
 
     if (maxIndex == -1) {
-        std::cerr << "Error: No se encontró un marco no pinneado.\n";
+        std::cout << "Error: No se encontró un marco no pinneado.\n";
     }
 
     return maxIndex;
