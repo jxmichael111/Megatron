@@ -12,6 +12,7 @@ include_directories(${CMAKE_CURRENT_SOURCE_DIR})
 # Añadir los archivos fuente
 set(SOURCES
     StorageManager.cpp
+    megatron.cpp
 )
 
 # Crear la librería StorageManager
