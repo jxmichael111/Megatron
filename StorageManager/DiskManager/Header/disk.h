@@ -1,6 +1,8 @@
 #ifndef DISK_H
 #define DISK_H
 
+#include "config.h"
+
 #include <iostream>
 #include <string>
 #include <sstream>

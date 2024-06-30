@@ -2,7 +2,6 @@
 #define DISKMANAGER_H
 
 #include "disk.h"
-
 #include <iostream>
 #include <string>
 #include <sstream>
@@ -18,9 +17,9 @@
 #include <iomanip>
 #include <filesystem>
 
-namespace fs = std::filesystem;
+#include "config.h"
 
-#define RUTA_BASE "F:\\UNSA\\2024-A\\Base de Datos II\\Megatron\\usr\\db\\"
+namespace fs = std::filesystem;
 
 /*
     @author Andrea Cuela

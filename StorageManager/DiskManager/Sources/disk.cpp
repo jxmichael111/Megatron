@@ -11,7 +11,7 @@ Disk::Disk(int platos, int pistas, int sectores, int tamañoSector, int tamañoB
     this->nroSectores = sectores;
     this->bytesxSector = tamañoSector;
     this->sectoresxBloque = tamañoBloque;
-    this->rutaBase = "F:\\UNSA\\2024-A\\Base de Datos II\\Megatron\\usr\\db\\"; 
+    this->rutaBase = std::string(RUTA_BASE); 
 }
 
 void Disk::printTamañoTotal() {

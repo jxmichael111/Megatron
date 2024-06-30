@@ -3,12 +3,11 @@
 
 #include "diskManager.h"
 #include "BufferManager.h"
+#include "config.h"
 
 #include <iostream>
 #include <string>
 #include <sstream>
-
-#define RUTA_BASE "F:\\UNSA\\2024-A\\Base de Datos II\\Megatron\\usr\\db\\"
 
 class Megatron {
     private:

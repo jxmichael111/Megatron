@@ -1,4 +1,5 @@
 #include "megatron.h"
+#include "config.h"
 
 #include <iostream>
 #include <string>
@@ -10,6 +11,11 @@
 /*
 	@author Andrea Cuela Y Michael Ticona
 */
+
+std::string getRutaBase() {
+    return std::string(RUTA_BASE);
+}
+
 void trim(std::string &str) {
     str.erase(str.begin(), std::find_if(str.begin(), str.end(), [](int ch) {
         return !std::isspace(ch);
@@ -42,13 +48,13 @@ size_t encontrarSimbolo(const std::string& cadena, char simbolo) {
 	@author Andrea Cuela Y Michael Ticona
 */
 bool consulta(std::string& query) {
-	std::ifstream esquema("F:\\UNSA\\2024-A\\Base de Datos II\\Megatron\\usr\\db\\esquema.txt");
+	std::ifstream esquema(getRutaBase() + "esquema.txt");
     if (!esquema.is_open()) {
         std::cerr << "No se pudo abrir el archivo Esquema " << std::endl;
         return false;
     }
 
-    std::ofstream fileConsulta("F:\\UNSA\\2024-A\\Base de Datos II\\Megatron\\usr\\db\\Consulta.txt");
+    std::ofstream fileConsulta(getRutaBase() + "Consulta.txt");
 	if (!fileConsulta.is_open()) {
         std::cerr << "No se pudo abrir el archivo Consulta.txt " << std::endl;
         esquema.close();
@@ -86,7 +92,7 @@ bool consulta(std::string& query) {
 				std::string file = query.substr(barraPos - query.begin() + 2);
 				trim(file);
 
-				std::ofstream outputFile("F:\\UNSA\\2024-A\\Base de Datos II\\Megatron\\usr\\db\\" + file + ".txt");
+				std::ofstream outputFile(getRutaBase() + file + ".txt");
 				if (!outputFile.is_open()) {
 					std::cerr << "No se pudo abrir el archivo: " << file << std::endl;
 					esquema.close();
@@ -144,7 +150,7 @@ bool consulta(std::string& query) {
 				esquema.close();
 				texto.clear(); 
 
-				std::ifstream lectura("F:\\UNSA\\2024-A\\Base de Datos II\\Megatron\\usr\\db\\" + encabezadoEsquema + ".txt");
+				std::ifstream lectura(getRutaBase() + encabezadoEsquema + ".txt");
 				
 				std::string registro;
 				
@@ -260,7 +266,7 @@ bool consulta(std::string& query) {
 				esquema.close();
 				texto.clear(); 
 
-				std::ifstream lectura("F:\\UNSA\\2024-A\\Base de Datos II\\Megatron\\usr\\db\\" + encabezadoEsquema + ".txt");
+				std::ifstream lectura(getRutaBase() + encabezadoEsquema + ".txt");
 				
 				std::string registro;
 				
@@ -334,7 +340,7 @@ bool consulta(std::string& query) {
 				esquema.close();
 				texto.clear();
 
-				std::ifstream lectura("F:\\UNSA\\2024-A\\Base de Datos II\\Megatron\\usr\\db\\" + encabezadoEsquema + ".txt");
+				std::ifstream lectura(getRutaBase() + encabezadoEsquema + ".txt");
 				if (!lectura.is_open()) {
 					std::cerr << "No se pudo abrir el archivo: " << encabezadoEsquema << std::endl;
 					esquema.close();
@@ -409,7 +415,7 @@ bool consulta(std::string& query) {
 					}
 					trim(comparar);
 
-					std::ofstream outputFile("F:\\UNSA\\2024-A\\Base de Datos II\\Megatron\\usr\\db\\" + file + ".txt");
+					std::ofstream outputFile(getRutaBase() + file + ".txt");
 					if (!outputFile.is_open()) {
 						std::cerr << "No se pudo abrir el archivo: " << file << std::endl;
 						esquema.close();
@@ -453,7 +459,7 @@ bool consulta(std::string& query) {
 					esquema.close();
 					texto.clear(); 
 
-					std::ifstream lectura("F:\\UNSA\\2024-A\\Base de Datos II\\Megatron\\usr\\db\\" + encabezadoEsquema + ".txt");
+					std::ifstream lectura(getRutaBase() + encabezadoEsquema + ".txt");
 					
 					std::string registro;
 					
@@ -584,7 +590,7 @@ bool consulta(std::string& query) {
 					esquema.close();
 					texto.clear(); 
 
-					std::ifstream lectura("F:\\UNSA\\2024-A\\Base de Datos II\\Megatron\\usr\\db\\" + encabezadoEsquema + ".txt");
+					std::ifstream lectura(getRutaBase() + encabezadoEsquema + ".txt");
 					
 					std::string registro;
 					
@@ -678,7 +684,7 @@ bool consulta(std::string& query) {
 					esquema.close();
 					texto.clear();
 
-					std::ifstream lectura("F:\\UNSA\\2024-A\\Base de Datos II\\Megatron\\usr\\db\\" + encabezadoEsquema + ".txt");
+					std::ifstream lectura(getRutaBase() + encabezadoEsquema + ".txt");
 					if (!lectura.is_open()) {
 						std::cerr << "No se pudo abrir el archivo: " << encabezadoEsquema << std::endl;
 						esquema.close();
