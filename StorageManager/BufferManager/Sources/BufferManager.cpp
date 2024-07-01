@@ -3,17 +3,17 @@
 #include "BufferManager.h"
 #include <cstdlib>
 
-BufferManager::BufferManager(int BufferSize, int capacidad) : BufferPool(BufferSize, capacidad), PageTable() {}
+BufferManager::BufferManager(int BufferSize, int capacidad) : bufferPool(BufferSize, capacidad), pageTable() {}
 
 void BufferManager::requestPage(int pageID, char operation, std::vector<std::string> Data) {
-    if (PageTable.GetSize() == BufferPool.GetSize() && !PageTable.IsPageMapped(pageID)) {
-        if (BufferPool.AllFramesInUse()) {
+    if (pageTable.GetSize() == bufferPool.GetSize() && !pageTable.IsPageMapped(pageID)) {
+        if (bufferPool.AllFramesInUse()) {
             char respuesta;
             std::cout << "El buffer pool esta lleno y todos los frames estan en uso. Desea reiniciar el buffer pool? (S/N): ";
             std::cin >> respuesta;
             if (respuesta == 'S' || respuesta == 's') {
-                BufferPool.ResetBufferPool();
-                PageTable.ResetPageTable();
+                bufferPool.ResetBufferPool();
+                pageTable.ResetPageTable();
                 std::cout << "Buffer pool y tabla de paginas reiniciados.\n";
             } else {
                 std::cout << "Operacion cancelada.\n";
@@ -29,17 +29,17 @@ void BufferManager::requestPage(int pageID, char operation, std::vector<std::str
             }
             int aux;
             if (strategy == 'L') {
-                aux = BufferPool.LRU();
+                aux = bufferPool.LRU();
                 std::cout << aux << std::endl;
-                for (const auto& entry : PageTable.pageMap) {
+                for (const auto& entry : pageTable.pageMap) {
                     if (entry.second == aux)
                         aux = entry.first;
                 }
                 std::cout << aux << std::endl;
                 releasePage(aux);
             } else {
-                aux = BufferPool.CLOCK();
-                for (const auto& entry : PageTable.pageMap) {
+                aux = bufferPool.CLOCK();
+                for (const auto& entry : pageTable.pageMap) {
                     if (entry.second == aux)
                         aux = entry.first;
                 }
@@ -49,88 +49,88 @@ void BufferManager::requestPage(int pageID, char operation, std::vector<std::str
     }
 
     if (operation == 'L' || operation =='l') {
-        if (!PageTable.IsPageMapped(pageID)) {
-            int frameID = BufferPool.FindUnpinnedFrame();
-            PageTable.MapPageToFrame(pageID, frameID);
-            BufferPool.IncremetFrame(frameID);
+        if (!pageTable.IsPageMapped(pageID)) {
+            int frameID = bufferPool.FindUnpinnedFrame();
+            pageTable.MapPageToFrame(pageID, frameID);
+            bufferPool.IncremetFrame(frameID);
             
             
-            for (const auto& entry : PageTable.pageMap) {
+            for (const auto& entry : pageTable.pageMap) {
                 if (pageID != entry.first){
-                    Frame* frame = BufferPool.GetFrame(entry.second);
+                    Frame* frame = bufferPool.GetFrame(entry.second);
                     frame->increment();
                     frame->refOn();
                 }
                 else {
-                    Frame* frame = BufferPool.GetFrame(entry.second);
+                    Frame* frame = bufferPool.GetFrame(entry.second);
                     frame->used();
                     frame->refOn();
-                    BufferPool.UpdateIndex();
+                    bufferPool.UpdateIndex();
                     frame->SetRequest(operation);
-                    BufferPool.SetData(Data, entry.second);
+                    bufferPool.SetData(Data, entry.second);
                 }
             }
         } else {
-            int frameID = PageTable.pageMap[pageID];
-            BufferPool.IncremetFrame(frameID);
+            int frameID = pageTable.pageMap[pageID];
+            bufferPool.IncremetFrame(frameID);
             
-            for (const auto& entry : PageTable.pageMap) {
+            for (const auto& entry : pageTable.pageMap) {
                 if (pageID != entry.first){
-                    Frame* frame = BufferPool.GetFrame(entry.second);
+                    Frame* frame = bufferPool.GetFrame(entry.second);
                     frame->increment();
                     frame->refOn();
                 }
                 else {
-                    Frame* frame = BufferPool.GetFrame(entry.second);
+                    Frame* frame = bufferPool.GetFrame(entry.second);
                     frame->used();
                     frame->refOn();
-                    BufferPool.UpdateIndex();
+                    bufferPool.UpdateIndex();
                     frame->SetRequest(operation);
-                    BufferPool.SetData(Data, entry.second);
+                    bufferPool.SetData(Data, entry.second);
                 }
             }
         }
     }
     else if (operation == 'W' || operation =='w'){
-        if (!PageTable.IsPageMapped(pageID)) {
-            int frameID = BufferPool.FindUnpinnedFrame();
-            PageTable.MapPageToFrame(pageID, frameID);
-            BufferPool.IncremetFrame(frameID);
-            BufferPool.DirtyFrame(frameID);   
-            for (const auto& entry : PageTable.pageMap) {
+        if (!pageTable.IsPageMapped(pageID)) {
+            int frameID = bufferPool.FindUnpinnedFrame();
+            pageTable.MapPageToFrame(pageID, frameID);
+            bufferPool.IncremetFrame(frameID);
+            bufferPool.DirtyFrame(frameID);   
+            for (const auto& entry : pageTable.pageMap) {
                 if (pageID != entry.first){
-                    Frame* frame = BufferPool.GetFrame(entry.second);
+                    Frame* frame = bufferPool.GetFrame(entry.second);
                     frame->increment();
                     frame->refOn();
                 }
                 else {
-                    Frame* frame = BufferPool.GetFrame(entry.second);
+                    Frame* frame = bufferPool.GetFrame(entry.second);
                     frame->used();
                     frame->refOn();
-                    BufferPool.UpdateIndex();
+                    bufferPool.UpdateIndex();
                     frame->SetRequest(operation);
-                    BufferPool.SetData(Data, entry.second);
+                    bufferPool.SetData(Data, entry.second);
                 }
             }
         } 
         else {
             // La página ya está mapeada, actualizar el dato en el buffer pool
-            int frameID = PageTable.pageMap[pageID];
-            BufferPool.IncremetFrame(frameID);
-            BufferPool.DirtyFrame(frameID);
-            for (const auto& entry : PageTable.pageMap) {
+            int frameID = pageTable.pageMap[pageID];
+            bufferPool.IncremetFrame(frameID);
+            bufferPool.DirtyFrame(frameID);
+            for (const auto& entry : pageTable.pageMap) {
                 if (pageID != entry.first){
-                    Frame* frame = BufferPool.GetFrame(entry.second);
+                    Frame* frame = bufferPool.GetFrame(entry.second);
                     frame->increment();
                     frame->refOn();
                 }
                 else {
-                    Frame* frame = BufferPool.GetFrame(entry.second);
+                    Frame* frame = bufferPool.GetFrame(entry.second);
                     frame->used();
                     frame->refOn();
-                    BufferPool.UpdateIndex();
+                    bufferPool.UpdateIndex();
                     frame->SetRequest(operation);
-                    BufferPool.SetData(Data, entry.second);
+                    bufferPool.SetData(Data, entry.second);
                 }
             }
         }
@@ -147,8 +147,8 @@ void BufferManager::requestPage(int pageID, char operation, std::vector<std::str
 }
 
 void BufferManager::releasePage(int pageID) {
-    int frameID = PageTable.pageMap[pageID];
-    Frame* frame = BufferPool.GetFrame(frameID);
+    int frameID = pageTable.pageMap[pageID];
+    Frame* frame = bufferPool.GetFrame(frameID);
 
     if(frame->GetRequestFront() == 'W' || frame->GetRequestFront() == 'w'){
         if (frame->GetDirty() ) {
@@ -167,16 +167,16 @@ void BufferManager::releasePage(int pageID) {
 
     if (frame->GetPinCount() == 0) {
 
-        Frame* frame = BufferPool.GetFrame(frameID);
+        Frame* frame = bufferPool.GetFrame(frameID);
         frame->reset();
-        BufferPool.ReleaseFrame(frameID);
-        PageTable.UnmapPage(pageID);
-        BufferPool.UpdateIndex(); // Opcionalmente actualizar el índice para la próxima política CLOCK
+        bufferPool.ReleaseFrame(frameID);
+        pageTable.UnmapPage(pageID);
+        bufferPool.UpdateIndex(); // Opcionalmente actualizar el índice para la próxima política CLOCK
 
         std::cout << "La pagina " << pageID << " ha sido liberada del marco " << frameID << "." << std::endl;
     }
     else{
-        Frame* frame = BufferPool.GetFrame(frameID);
+        Frame* frame = bufferPool.GetFrame(frameID);
         frame->DecrementCount();
         frame->ReleaseRequest();
     }
@@ -184,23 +184,23 @@ void BufferManager::releasePage(int pageID) {
 
 void BufferManager::printPageTable() {
     std::cout << "# Frame ID\t- Page ID\t- Dirty Bit\t- Pin Count\t- Pinned\t- Last Used\t- Ref. Bit\n";
-    for (const auto& entry : PageTable.pageMap) {
-        Frame* frame = BufferPool.GetFrame(entry.second);
+    for (const auto& entry : pageTable.pageMap) {
+        Frame* frame = bufferPool.GetFrame(entry.second);
         std::cout << "# " << entry.second << "\t\t- " << entry.first << "\t\t- "
                   << (frame->GetDirty() ? "1" : "0") << "\t\t- "
                   << frame->GetPinCount() << "\t\t- " << frame->GetIsPinned() << "\t\t- " << frame->GetLastUsed() << "\t\t- " << frame->GetRefBit() << "\t\t\n";
     }
-    for (const auto& entry : PageTable.pageMap) {
-        Frame* frame = BufferPool.GetFrame(entry.second);
+    for (const auto& entry : pageTable.pageMap) {
+        Frame* frame = bufferPool.GetFrame(entry.second);
         std::cout << "Los requerimientos del frame " << entry.second << " son:" << std::endl;
         frame->PrintRequest();
     }
 }
 void BufferManager::PinearPagina(int pageID) {
-    auto it = PageTable.pageMap.find(pageID);
-    if (it != PageTable.pageMap.end()) {
+    auto it = pageTable.pageMap.find(pageID);
+    if (it != pageTable.pageMap.end()) {
         int frameID = it->second;
-        Frame* frame = BufferPool.GetFrame(frameID);
+        Frame* frame = bufferPool.GetFrame(frameID);
         frame->pin();
     } else {
         std::cout << "La pagina no se encuentra" << std::endl;
@@ -208,8 +208,8 @@ void BufferManager::PinearPagina(int pageID) {
 }
 
 void BufferManager::PrintRequest() {
-    for (const auto& entry : PageTable.pageMap) {
-        Frame* frame = BufferPool.GetFrame(entry.second);
+    for (const auto& entry : pageTable.pageMap) {
+        Frame* frame = bufferPool.GetFrame(entry.second);
         std::cout << "Los requerimientos del frame " << entry.second << " son:" << std::endl;
         frame->PrintRequest();
     }
@@ -217,10 +217,10 @@ void BufferManager::PrintRequest() {
 
 void BufferManager::ViewPagina(int pageID) {
     system("cls");  // Limpia la pantalla
-    auto it = PageTable.pageMap.find(pageID);
-    if (it != PageTable.pageMap.end()) {
+    auto it = pageTable.pageMap.find(pageID);
+    if (it != pageTable.pageMap.end()) {
         int frameID = it->second;
-        Frame* frame = BufferPool.GetFrame(frameID);
+        Frame* frame = bufferPool.GetFrame(frameID);
         std::cout << "El contenido de la pagina " << pageID << " es:" << std::endl; 
         frame->GetData();   
     } else {

@@ -7,8 +7,8 @@
 
 class BufferManager {
 private:
-    BufferPool BufferPool;
-    PageTable PageTable;
+    BufferPool bufferPool;
+    PageTable pageTable;
 
 public:
     /*
