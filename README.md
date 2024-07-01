@@ -11,12 +11,18 @@
 ## Uso
 
 1. Para compilar el proyecto por primera vez, crea la carpeta build, configura y compila el proyecto:
-    mkdir build
-    cd build
-    cmake ..
-    cmake --build .
+    - mkdir build
+    - cd build
+    - cmake ..
+    - cmake --build .
+
+    Linux:
+    - solo make
+    
+
 2. Para compilar el proyecto después de la configuración inicial:
-    cmake --build .
+    - cmake --build .
+    - make
 
 3. Configurar la variable de entorno 'Ruta_Base'
     En la carpeta config.h modificar las variables de entorno y cambiar la ruta base 
@@ -29,4 +35,5 @@
 ## Autor
 
 1. Anlu
-2. Michael
+2. Melanie
+3. Michael
