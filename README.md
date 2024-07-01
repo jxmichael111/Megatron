@@ -5,26 +5,24 @@
 
 ## Instalación
 
-1.  Clonar repositorio
+1.  Clonar repositorio  
     git clone https://github.com/jxmichael111/Megatron.git
 
 ## Uso
 
-1. Para compilar el proyecto por primera vez, crea la carpeta build, configura y compila el proyecto:
-    - mkdir build
-    - cd build
-    - cmake ..
-    - cmake --build .
+1. Para compilar el proyecto por primera vez, crea la carpeta build, configura y compila el proyecto:  
+    mkdir build  
+    cd build  
+    cmake ..  
+
+2. Para compilar el proyecto después de la configuración inicial:  
+    Windows:  
+    - cmake --build .  
 
     Linux:
-    - solo make
-    
-
-2. Para compilar el proyecto después de la configuración inicial:
-    - cmake --build .
     - make
 
-3. Configurar la variable de entorno 'Ruta_Base'
+3. Configurar la variable de entorno 'Ruta_Base'  
     En la carpeta config.h modificar las variables de entorno y cambiar la ruta base 
 
     - Establecer variables de entorno en PowerShell:
@@ -35,5 +33,5 @@
 ## Autor
 
 1. Anlu
-2. Melanie
+2. Melany
 3. Michael

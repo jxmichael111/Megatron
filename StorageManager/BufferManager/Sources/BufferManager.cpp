@@ -1,8 +1,7 @@
 #include <iostream>
 #include <cassert>
 #include "BufferManager.h"
-#include <conio.h>
-
+#include <cstdlib>
 
 BufferManager::BufferManager(int BufferSize, int capacidad) : BufferPool(BufferSize, capacidad), PageTable() {}
 
@@ -217,7 +216,7 @@ void BufferManager::PrintRequest() {
 }
 
 void BufferManager::ViewPagina(int pageID) {
-    std::cout << "\x1B[2J\x1B[H";  // Limpia la pantalla
+    system("cls");  // Limpia la pantalla
     auto it = PageTable.pageMap.find(pageID);
     if (it != PageTable.pageMap.end()) {
         int frameID = it->second;
@@ -227,8 +226,6 @@ void BufferManager::ViewPagina(int pageID) {
     } else {
         std::cout << "La pagina no se encuentra" << std::endl;
     }  
-    
-    std::cout << "\nPresione cualquier tecla para continuar...";
-    _getch(); // Espera a que el usuario presione una tecla
-    std::cout << "\x1B[2J\x1B[H";  // Limpia la pantalla
+    system("pause");
+    system("cls");  // Limpia la pantalla
 }

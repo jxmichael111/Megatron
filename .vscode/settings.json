@@ -75,7 +75,9 @@
         "list": "cpp",
         "map": "cpp",
         "string_view": "cpp",
-        "numbers": "cpp"
+        "numbers": "cpp",
+        "buffer": "cpp",
+        "netfwd": "cpp"
     },
     "C_Cpp.errorSquiggles": "disabled",
     "cmake.configureOnOpen": true
