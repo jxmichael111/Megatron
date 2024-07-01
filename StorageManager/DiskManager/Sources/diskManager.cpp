@@ -57,12 +57,12 @@ void DiskManager::validarUbicacionActual() {
 void DiskManager::createStructureDisk() {
 
     // * Crear file sectores
-    std::string carpetaSectores = RUTA_BASE + std::string("\\Sectores"); 
+    std::string carpetaSectores = RUTA_BASE + std::string("/Sectores"); 
     fs::remove_all(carpetaSectores); // Remueve carpetas anteriores con el mismo nombre    
     fs::create_directories(carpetaSectores); // Crea la carpeta directorios
 
     for (int i = 0; i < disco.getTotalSectores(); i++) {
-        std::string archivoSector = carpetaSectores + "\\" + std::to_string(this->platoAct) + "-" + this->superfAct + "-" + std::to_string(this->pistaAct) + "-" + std::to_string(this->sectorAct) + ".txt";
+        std::string archivoSector = carpetaSectores + "/" + std::to_string(this->platoAct) + "-" + this->superfAct + "-" + std::to_string(this->pistaAct) + "-" + std::to_string(this->sectorAct) + ".txt";
         std::ofstream archivo(archivoSector);
         archivo << this->sectorAct << "#" << disco.getBytesxSector() << "#0#" << std::endl;
         archivo.close();
@@ -81,13 +81,13 @@ void DiskManager::createStructureDisk() {
     sizeBlock = disco.getTamañoBloque();;
 
     // *Crear los files de bloques
-    std::string carpetaBloques = RUTA_BASE + std::string("\\Bloques") ;
+    std::string carpetaBloques = RUTA_BASE + std::string("/Bloques") ;
     fs::remove_all(carpetaBloques);
     fs::create_directories(carpetaBloques);
 
     for (int bloque = 1; bloque <= disco.getCantidadBloques(); bloque++)
     {
-        std::string archivoBloque = carpetaBloques + "\\Bloque" + std::to_string(bloque) + ".txt";
+        std::string archivoBloque = carpetaBloques + "/Bloque" + std::to_string(bloque) + ".txt";
         std::ofstream archivo(archivoBloque);
         if (!archivo.is_open()) {
             std::cerr << "Error al crear el archivo " << archivoBloque << '\n';
@@ -119,7 +119,7 @@ void DiskManager::createStructureDisk() {
 
 
 void DiskManager::showBlockContent(int numBloque) {
-    std::string carpetaBloque = RUTA_BASE + std::string("Bloques\\");
+    std::string carpetaBloque = RUTA_BASE + std::string("Bloques/");
     std::string archivoBloque = carpetaBloque + std::string("Bloque") + std::to_string(numBloque) + ".txt";
     std::ifstream archivo(archivoBloque);
 
@@ -137,7 +137,7 @@ void DiskManager::showBlockContent(int numBloque) {
 }
 
 void DiskManager::showSectorContent(int plato, char superficie, int pista, int sector) {
-    std::string carpetaSectores = RUTA_BASE + std::string("Sectores\\");
+    std::string carpetaSectores = RUTA_BASE + std::string("Sectores/");
     std::string archivoSector = carpetaSectores + std::to_string(plato) + "-" + superficie + "-" + std::to_string(pista) + "-" + std::to_string(sector) + ".txt";
     std::ifstream archivo(archivoSector);
 
@@ -156,7 +156,7 @@ void DiskManager::showSectorContent(int plato, char superficie, int pista, int s
 
 std::vector<std::string> DiskManager::readBlockToVector(int numBloque) {
     std::vector<std::string> registros;
-    std::string carpetaBloque = RUTA_BASE + std::string("Bloques\\");
+    std::string carpetaBloque = RUTA_BASE + std::string("Bloques/");
     std::string archivoBloque = carpetaBloque + std::string("Bloque") + std::to_string(numBloque) + ".txt";
     std::ifstream file(archivoBloque);
 
@@ -581,7 +581,7 @@ void DiskManager::useLongitudFija(std::string lineaArchivo) {
     Nodo* bloque = this->freeSpaceInicial;
 
     do {
-        std::string archivoBloque = RUTA_BASE + std::string("\\Bloques\\Bloque") + std::to_string(bloque->numeroBloque) + std::string(".txt");
+        std::string archivoBloque = RUTA_BASE + std::string("/Bloques/Bloque") + std::to_string(bloque->numeroBloque) + std::string(".txt");
         std::ifstream archivoReadBloque(archivoBloque, std::ios::app);
 
         if (!archivoReadBloque) {
@@ -668,7 +668,7 @@ void DiskManager::sectorFillLongitudFija(const std::string& lineaArchivo, int ub
     }
     if(estado) return;
     
-    std::string archivoSector = RUTA_BASE + std::string("Sectores\\") + std::to_string(this->platoAct) + "-" + this->superfAct + "-" + std::to_string(this->pistaAct) + "-" + std::to_string(this->sectorAct) + ".txt";
+    std::string archivoSector = RUTA_BASE + std::string("Sectores/") + std::to_string(this->platoAct) + "-" + this->superfAct + "-" + std::to_string(this->pistaAct) + "-" + std::to_string(this->sectorAct) + ".txt";
     std::ifstream archivoReadSector(archivoSector);
 
     if (!archivoReadSector) {
@@ -788,8 +788,8 @@ void DiskManager::actualizarSector() {
 DiskManager::~DiskManager() {
     //delete[] freeSpaceMap;
 
-    std::string pathBloque = RUTA_BASE + std::string("\\Bloques");
-    std::string pathSector = RUTA_BASE + std::string("\\Sectores");
+    std::string pathBloque = RUTA_BASE + std::string("/Bloques");
+    std::string pathSector = RUTA_BASE + std::string("/Sectores");
 
     /*try {
         // Verificar si la carpeta existe

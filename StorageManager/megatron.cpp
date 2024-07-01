@@ -12,7 +12,7 @@ Megatron::Megatron() : controladorDisco(false, 0, 0, 0, 0, 0), gestor (0, 0) {
 }
 Megatron::Megatron(bool tipo, int nroPlatos, int nroPistas, int nroSectores, int bytesxSector, int sectoresxBloque, int frames)
     : controladorDisco(tipo, nroPlatos, nroPistas, nroSectores, bytesxSector, sectoresxBloque), gestor(frames, bytesxSector*sectoresxBloque) {
-    this->nEsquema = RUTA_BASE + std::string("\\esquema.txt");
+    this->nEsquema = RUTA_BASE + std::string("/esquema.txt");
     
     std::ifstream archivo(nEsquema);
     if (!archivo.good()) {
