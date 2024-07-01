@@ -4,6 +4,8 @@ project(Megatron)
 # Definir macros globalmente
 if(DEFINED ENV{ANLU})
     add_definitions(-DANLU)
+elseif(DEFINED ENV{MELANY})
+    add_definitions(-DMELANY)
 elseif(DEFINED ENV{MICHAEL})
     add_definitions(-DMICHAEL)
 endif()
