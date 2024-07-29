@@ -1,6 +1,8 @@
 #pragma once
 #include <string>
 #include <vector>
+#include <limits> 
+
 #include "BufferPool.h"
 #include "PageTable.h"
 
@@ -75,5 +77,8 @@ public:
     /*
         @author Michael Ticona
     */
-    void ViewPagina(int );
+    void ViewPagina(int);
+
+
+    void ModRegister(int, int);
 };

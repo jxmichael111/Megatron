@@ -1,6 +1,7 @@
 #include "megatron.h"
 #include "config.h"
 
+
 #include <iostream>
 #include <string>
 #include <fstream>
@@ -951,9 +952,37 @@ void menu() {
     } while (option);
 
 }
+
+/*
+int main() {
+    BPlusTree<int> bptree(3);
+
+    std::vector<int> keys = {10, 20, 5, 6, 12, 30, 7, 17};
+    for (const auto& key : keys) {
+        bptree.insert(key);
+    }
+
+    std::cout << "Árbol B+ después de las inserciones:" << std::endl;
+    bptree.printTree();
+
+    int key_to_search = 6;
+    BPlusTreeNode<int>* result = bptree.search(key_to_search);
+    if (result) {
+        std::cout << "Clave " << key_to_search << " encontrada." << std::endl;
+    } else {
+        std::cout << "Clave " << key_to_search << " no encontrada." << std::endl;
+    }
+
+    return 0;
+}
+//*/
+
+//*
 int main() {
     
 	menu();
 
 	return 0;
 }
+
+//*/

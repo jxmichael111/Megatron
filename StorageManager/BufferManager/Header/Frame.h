@@ -18,11 +18,18 @@ public:
     /*
         @author Michael Ticona
     */
-    void GetData();
-    
+    std::vector<std::string> GetData();
     /*
         @author Michael Ticona
     */
+    void ViewRegister(int);
+
+    std::vector<int> GetIndex();
+
+    std::vector<std::string> GetRegister(int);
+
+    void SetRegister(int, std::vector<std::string>);
+
     bool GetDirty();
     
     /*

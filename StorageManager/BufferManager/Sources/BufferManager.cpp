@@ -138,6 +138,12 @@ void BufferManager::requestPage(int pageID, char operation, std::vector<std::str
         char response;
         std::cin >> response;
         if (response == 'S' || response == 's') {
+            int NroRegister;
+            ViewPagina(pageID);
+
+            std::cout << "Que registro deseas Modificar:\n";
+            std::cin >> NroRegister;
+            ModRegister(pageID, NroRegister);
             std::cout << " pagina modificada" << std::endl;
         }
         else if (response == 'N' || response == 'n') {
@@ -222,10 +228,58 @@ void BufferManager::ViewPagina(int pageID) {
         int frameID = it->second;
         Frame* frame = bufferPool.GetFrame(frameID);
         std::cout << "El contenido de la pagina " << pageID << " es:" << std::endl; 
-        frame->GetData();   
+        frame->ViewData();   
     } else {
         std::cout << "La pagina no se encuentra" << std::endl;
     }  
     system("pause");
     system("cls");  // Limpia la pantalla
 }
+
+void BufferManager::ModRegister(int pageID, int NroRegister) {
+    auto it = pageTable.pageMap.find(pageID);
+    if (it != pageTable.pageMap.end()) {
+        int frameID = it->second;
+        Frame* frame = bufferPool.GetFrame(frameID);
+
+        std::vector<int> index = frame->GetIndex();
+        std::vector<std::string> registeer = frame->GetRegister(NroRegister);
+
+        std::cout << std::endl;
+        frame->ViewRegister(NroRegister);
+        std::cout << "____________________________________" << std::endl;
+        for(int i = 0; i < registeer.size(); i++) {
+            std::cout << "Columa " << i+1 << ": " << registeer[i] << std::endl; 
+        } 
+
+        int col;
+        std::cout << "Que columan desea Modificar:" << std::endl; 
+        std::cin >> col;
+        if (col-1 <= index.size()) {
+            std::cout << registeer[col-1] << std::endl;
+            std::cout << "_____________________________________________" << std::endl;
+
+            std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+
+            std::string aux;
+            std::getline(std::cin, aux);
+            
+            if(aux.size() <= index[col-1]) 
+                aux = aux.substr(0, 60);
+
+            for(int i = aux.size(); i < index[col-1]; i ++) 
+               aux += " ";
+
+            registeer[col-1] = aux;
+            frame->SetRegister(NroRegister, registeer);
+        }
+        else {
+            std::cout << "columna exedida" << std::endl;
+        }
+
+    } else {
+        std::cout << "La pagina no se encuentra" << std::endl;
+    } 
+}
+
+

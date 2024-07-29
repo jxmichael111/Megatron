@@ -1,10 +1,11 @@
 #include <string>
 #include <iostream>
+#include <sstream>
 #include "Frame.h"
 
 void Frame::ViewData() {
     for(int i = 0; i < data.size(); i++) {
-        std::cout << data[i] << std::endl;
+        std::cout << data[i+1] << std::endl;
     }
 }
 
@@ -100,13 +101,63 @@ void Frame::SetData(std::string registro) {
     data.push_back(registro);
 }
 
-void Frame::GetData() {
-    for(int i = 0; i < data.size(); i++){
-        std::cout << data[i] << std::endl;
-    }
+std::vector<std::string> Frame::GetData() {
+    return data;
 }
 
-bool Frame::GetDirty() {
+void Frame::ViewRegister(int NroRegister) {
+    std::cout << data[NroRegister+1] << std::endl;
+    
+}
+
+std::vector<int> Frame::GetIndex() {
+    std::vector<int> index;
+    if (!data.empty()) {
+        std::string FirstLine = data[0];
+        std::istringstream iss(FirstLine);
+        std::string word;
+
+        while (iss >> word) {
+            index.push_back(std::stoi(word));
+        }
+    }
+    return index;
+}
+
+std::vector<std::string> Frame::GetRegister(int NroRegister) {
+    std::vector<std::string> Register;
+    std::vector<int> Index = GetIndex();
+
+    if (NroRegister + 1 >= data.size() || Index.empty()) {
+        return Register; 
+    }
+
+    std::string Line = data[NroRegister + 1];
+    int Pos = 0;
+
+    for (int length : Index) {
+        if (Pos >= Line.size()) {
+            break; 
+        }
+
+        std::string row = Line.substr(Pos,length);
+        Register.push_back(row);
+        Pos += length;
+    }
+
+    return Register;
+}
+
+void Frame::SetRegister(int NroRegister, std::vector<std::string> Register) {
+    std::string row;
+    for(int i = 0; i < Register.size(); i++)
+        row += Register[i];
+
+    data[NroRegister+1]= row;
+}
+
+bool Frame::GetDirty()
+{
     return dirtyFlag;
 }
 

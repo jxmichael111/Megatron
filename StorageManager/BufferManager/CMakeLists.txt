@@ -1,5 +1,6 @@
 # Nombre del subproyecto
 project(BufferManager)
+
 # StorageManager/BufferManager/CMakeLists.txt
 file(GLOB SOURCES Sources/*.cpp)
 file(GLOB HEADERS Header/*.h)

@@ -7,3 +7,4 @@ file(GLOB HEADERS Header/*.h)
 
 add_library(AccessMethods ${SOURCES} ${HEADERS})
 target_include_directories(AccessMethods PUBLIC Header)
+target_include_directories(AccessMethods PUBLIC Sources)
