@@ -12,11 +12,11 @@ Megatron::Megatron() : controladorDisco(false, 0, 0, 0, 0, 0), gestor (0, 0) {
 }
 Megatron::Megatron(bool tipo, int nroPlatos, int nroPistas, int nroSectores, int bytesxSector, int sectoresxBloque, int frames)
     : controladorDisco(tipo, nroPlatos, nroPistas, nroSectores, bytesxSector, sectoresxBloque), gestor(frames, bytesxSector*sectoresxBloque) {
-    this->nEsquema = RUTA_BASE + std::string("/esquema.txt");
+    this->rutaEsquema = RUTA_BASE + std::string("/esquema.txt");
     
-    std::ifstream archivo(nEsquema);
+    std::ifstream archivo(rutaEsquema);
     if (!archivo.good()) {
-        std::ofstream nuevoArchivo(nEsquema);
+        std::ofstream nuevoArchivo(rutaEsquema);
         if (nuevoArchivo.is_open()) {
             nuevoArchivo.close();
             std::cout << "El archivo ha sido creado." << std::endl;
@@ -40,7 +40,7 @@ void Megatron::setEsquema(const std::string nombreEsquema){
 void Megatron::crearEsquemaDesdeCsv(const std::string file, int cant){
     std::cout << "Ruta completa: " << RUTA_BASE + file + ".csv" << std::endl;
     std::ifstream readFile(RUTA_BASE + file + ".csv");
-    std::ofstream writeEsquema(this->nEsquema, std::ios::app);
+    std::ofstream writeEsquema(this->rutaEsquema, std::ios::app);
     std::string esquema;
     int i = 0;
 
@@ -60,7 +60,15 @@ void Megatron::crearEsquemaDesdeCsv(const std::string file, int cant){
         std::getline(readFile, lineaArchivo);
 
         if (option == 'S' || option == 's') {
-            esquema = "Titanic#PassengerId#int#Survived#bool#Pclass#char#Name#varchar(60)#Sex#varchar(6)#Age#int#SibSp#bool#Parch#char#Ticket#varchar(14)#Fare#varchar(10)#Cabin#varchar(15)#Embarked#char";
+            /*std::cout << "\tSelecciona una opción:" <<std::endl;
+            std::cout << "\t1. Para Titanic" << std::endl;
+            std::cout << "\t2. Para Posts" << std::endl;
+            std::cin >> option;
+            if (option == '1') 
+                esquema = "Titanic#PassengerId#int#Survived#bool#Pclass#char#Name#varchar(60)#Sex#varchar(6)#Age#int#SibSp#bool#Parch#char#Ticket#varchar(16)#Fare#varchar(10)#Cabin#varchar(5)#Embarked#char";
+            else 
+                esequema = "Posts .................................................................."*/
+            esquema = "Titanic#PassengerId#int#Survived#bool#Pclass#char#Name#varchar(60)#Sex#varchar(6)#Age#int#SibSp#bool#Parch#char#Ticket#varchar(16)#Fare#varchar(10)#Cabin#varchar(5)#Embarked#char";
         } else {            
             while (lineaArchivo[i] != '\0') {
                 if (lineaArchivo[i] == ',') {
@@ -89,61 +97,18 @@ void Megatron::crearEsquemaDesdeCsv(const std::string file, int cant){
 
         if (cant == 0) {
             while (std::getline(readFile, lineaArchivo)) {
-                /*std::string atributo;
-                std::string registro;
-                bool is_string = false;
-
-                for (char c : lineaArchivo) {
-                    if (c == '"') {
-                        is_string = !is_string;
-                    } else if (c == ',') {
-                        if (is_string) {
-                            atributo.push_back(c);
-                        } else {
-                            if (!atributo.empty()) {
-                                registro += atributo + "#";
-                                atributo.clear();
-                            } else {
-                                registro += "NULL#"; 
-                            }
-                        }
-                    } else {
-                        atributo.push_back(c);
-                    }
-                }
-                registro += atributo;
-                writeRelacion << registro << std::endl;  */       
+                //SET SI ES LONGITUD FIJA O VARIABLE      
                 controladorDisco.useLongitudFija(lineaArchivo);
             }
         } else {
             int count = 0;
             while (std::getline(readFile, lineaArchivo)) { 
-                /*std::string atributo;
-                std::string registro;
-                bool is_string = false;
-
-                for (char c : lineaArchivo) {
-                    if (c == '"') {
-                        is_string = !is_string;
-                    } else if (c == ',') {
-                        if (is_string) {
-                            atributo.push_back(c);
-                        } else {
-                            if (!atributo.empty()) {
-                                registro += atributo + "#";
-                                atributo.clear();
-                            } else {
-                                registro += "NULL#"; 
-                            }
-                        }
-                    } else {
-                        atributo.push_back(c);
-                    }
-                }
-                registro += atributo;
-                writeRelacion << registro << std::endl; */
+                //SETN SI ES LONGITUD FIJA O VARIABLE
                 controladorDisco.useLongitudFija(lineaArchivo);
-                if ( count == cant) 
+
+                // CONTAR LÍNEAS
+                count++;
+                if (count == cant) 
                     break;
             }
         }
@@ -158,7 +123,7 @@ void Megatron::crearEsquemaDesdeCsv(const std::string file, int cant){
 }
 
 void Megatron::agregarEsquemaManual() {
-    std::ofstream archivo(this->nEsquema);
+    std::ofstream archivo(this->rutaEsquema);
     if (!archivo.is_open()) {
         std::cerr << "Error al abrir el archivo." << std::endl;
         return;
@@ -234,8 +199,8 @@ void Megatron::ingresarRelacionManual(bool tipo) {
         std::cerr << "Error al abrir el archivo de relación\n";
         return;
     }
-    std::cout << nEsquema << std::endl;
-    std::ifstream readEsquema(this->nEsquema);
+    std::cout << rutaEsquema << std::endl;
+    std::ifstream readEsquema(this->rutaEsquema);
     if (!readEsquema.is_open()) {
         std::cerr << "Error al abrir el archivo de esquema\n";
         writeFile.close(); 
@@ -282,7 +247,7 @@ void Megatron::ingresarDesdeArchivoCsv(const std::string file, int cant) {
     
 
     std::ofstream writeRelacion(RUTA_BASE + this->esquemaActual, std::ios::app);
-    std::ifstream readFile(RUTA_BASE + this->nEsquema);
+    std::ifstream readFile(RUTA_BASE + this->rutaEsquema);
     std::ifstream archivo(RUTA_BASE + file);
 
     if (cant == 0) {

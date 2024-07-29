@@ -15,16 +15,7 @@ class Megatron {
         BufferManager gestor;
 
         std::string esquemaActual; //Nombre del esquema actual
-        
-
-
-
-        int nroEncabezados; //contador de encabezados ATRIBUTOS
-        
-        std::string ruta; // Nombre del txt
-        std::string nombreFile; //Nombre del archivo que se leerá 
-        std::string nEsquema; //Nombre del archivo en el que se guardan las relaciones
-        std::string esquema; //
+        std::string rutaEsquema; //Nombre del archivo en el que se guardan las relaciones
 
     public:
 
@@ -44,11 +35,6 @@ class Megatron {
         @author Andrea Cuela Y Michael Ticona
         */
         void setEsquema(const std::string);
-
-        /*
-        @author Andrea Cuela Y Michael Ticona
-        */
-        void setRelacion(const std::string);
 
         // Esquema -------------------------------------------------------------------------
 
@@ -83,7 +69,7 @@ class Megatron {
         */
         std::string crearArchivoRelacion(std::string); //Crea el archivo de la relación R1, R2, ....  
 
-        //bool eliminarRegistro(std::string);
+        //bool eliminarRegistro(std::string); //POR IMPLEMENTARSE
 
         /*
         @author Andrea Cuela
