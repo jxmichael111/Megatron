@@ -1,6 +1,9 @@
 /build/
 /Disco/
+/DBFiles/
 *.txt
 !CMakeLists.txt
 *.csv
+*.dot
+*.dat
 .vscode

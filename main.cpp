@@ -1,6 +1,6 @@
 #include "megatron.h"
 #include "config.h"
-
+#include "BPTree.h"
 
 #include <iostream>
 #include <string>
@@ -13,9 +13,24 @@
 	@author Andrea Cuela Y Michael Ticona
 */
 
+
 std::string getRutaBase() {
     return std::string(RUTA_BASE);
 }
+
+void deleteMethod(BPTree* bPTree) {
+    cout << "Del arbol, cual deseas borrar?: " << endl;
+    bPTree->display(bPTree->getRoot());
+ 
+    int tmp;
+    cout << "Clave a borrar: " << endl;
+    cin >> tmp;
+    bPTree->removeKey(tmp);
+
+    cout << "Arbol actualizado" << endl;
+    bPTree->display(bPTree->getRoot());
+}
+
 
 void trim(std::string &str) {
     str.erase(str.begin(), std::find_if(str.begin(), str.end(), [](int ch) {
@@ -745,6 +760,56 @@ bool consulta(std::string& query) {
 /*
 	@author Andrea Cuela Y Michael Ticona
 */
+
+// ---------------------------Metodos para el BPlusTree---------------------------
+void insertionMethod(BPTree** bPTree) {
+    int postid, userid, hour;
+    std::string text;
+    //indice denso por postid
+
+    std::cout << "\nIndica Postid: ";
+    std::cin >> postid; // >> userid >> hour >> text;
+
+    std::string fileName = getRutaBase() + std::string("DBFiles/");
+
+    //nombre del archivo con el cual se encuentra
+    fileName += to_string(postid) + ".txt";
+    FILE* filePtr = fopen(fileName.c_str(), "w");
+    std::string userTuple = to_string(postid) + "|"
+                        + to_string(userid) + "|" 
+                        + to_string(hour) + "|" 
+                        + text +  "\n";
+    fprintf(filePtr, "%s", userTuple.c_str());
+
+    //indice denso por postid
+    (*bPTree)->insert(postid, filePtr);
+    fclose(filePtr);
+    std::cout << "Se inserto el postid:" << postid <<endl;
+
+    //LLENAR EL ARBOL
+    (*bPTree)->serialize("bptree.dat");
+}
+
+void searchMethod(BPTree* bPTree) {
+    int idx;
+    std::cout << "Cual es el postid? ";
+    std::cin >> idx;
+
+    bPTree->search(idx);
+}
+
+void printMethod(BPTree* bPTree) {
+    int opt;
+    std::cout << "\n\t1.Arbol de niveles \n\t2. Forma secuencial\n";
+    std::cin >> opt;
+
+    std::cout << endl;
+    if (opt == 1)
+        bPTree->display(bPTree->getRoot());
+    else
+        bPTree->seqDisplay(bPTree->getRoot());
+}
+
 void menu() {
 	int option;
     int resp;
@@ -953,31 +1018,73 @@ void menu() {
 
 }
 
-/*
+//*
 int main() {
-    BPlusTree<int> bptree(3);
+    cout << "\n************* Menu B+ Tree *************\n";
 
-    std::vector<int> keys = {10, 20, 5, 6, 12, 30, 7, 17};
-    for (const auto& key : keys) {
-        bptree.insert(key);
-    }
+    bool flag = true;
+    int option;
+    int degree;
 
-    std::cout << "Árbol B+ después de las inserciones:" << std::endl;
-    bptree.printTree();
+    cout << "Grado del arbol: ";
+    cin >> degree;
+    degree = degree*2;
 
-    int key_to_search = 6;
-    BPlusTreeNode<int>* result = bptree.search(key_to_search);
-    if (result) {
-        std::cout << "Clave " << key_to_search << " encontrada." << std::endl;
-    } else {
-        std::cout << "Clave " << key_to_search << " no encontrada." << std::endl;
-    }
+    BPTree* bPTree = new BPTree(degree, degree);
+
+    do {
+        
+        cout << "0: Recuperar arbol \n1: Insertar \n2: Buscar \n3: Imprimir arbol\n4: Borrar\n5: Generar imagen del arbol\n6: Salir" << endl;
+        cout << "\tElija una opcion : ";
+        cin >> option;
+
+        switch (option) {
+            case 0:
+                // Recuperar el arbol
+                std::cout << "Recuperando el árbol..." << std::endl;
+
+                bPTree->deserialize("bptree.dat");
+
+                if (bPTree->getRoot() == nullptr) {
+                    std::cerr << "Error: No se pudo recuperar el árbol." << std::endl;
+                } else {
+                    std::cout << "Árbol recuperado exitosamente." << std::endl;
+                }
+
+                break;
+            case 1:
+                // Inserta valores al arbol
+                insertionMethod(&bPTree);
+                break;
+            case 2:
+                // Busca valores al arbol
+                searchMethod(bPTree);
+                break;
+            case 3:
+                // Imprime el arbol
+                printMethod(bPTree);
+                break;
+            case 4:
+                // Borra valores del arbol
+                deleteMethod(bPTree);
+                break;
+            case 5:
+                //Genera imagen del arbol
+                bPTree->toDot("bptree.dot");
+                std::cout << "El archivo DOT se ha generado como 'bptree.dot'. Usa Graphviz para visualizarlo." << std::endl;
+                break;
+            default:
+                flag = false;
+                break;
+        }
+    }while (flag);
+
 
     return 0;
 }
 //*/
 
-//*
+/*
 int main() {
     
 	menu();
