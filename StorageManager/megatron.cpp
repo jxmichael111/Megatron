@@ -98,13 +98,15 @@ void Megatron::crearEsquemaDesdeCsv(const std::string file, int cant){
         if (cant == 0) {
             while (std::getline(readFile, lineaArchivo)) {
                 //SET SI ES LONGITUD FIJA O VARIABLE      
-                controladorDisco.useLongitudFija(lineaArchivo);
+                //controladorDisco.useLongitudFija(lineaArchivo);
+                controladorDisco.insertar(lineaArchivo);
             }
         } else {
             int count = 0;
             while (std::getline(readFile, lineaArchivo)) { 
-                //SETN SI ES LONGITUD FIJA O VARIABLE
-                controladorDisco.useLongitudFija(lineaArchivo);
+                //SET SI ES LONGITUD FIJA O VARIABLE
+                //controladorDisco.useLongitudFija(lineaArchivo);
+                controladorDisco.insertar(lineaArchivo);
 
                 // CONTAR LÍNEAS
                 count++;

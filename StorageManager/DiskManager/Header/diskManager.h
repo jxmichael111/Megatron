@@ -281,22 +281,12 @@ class DiskManager {
         */
         void vaciarHeapFile();
 
-        // !OJO - por implementar
-
         /*
         @author Andrea Cuela
         */
-        void saveHeapFile();
+        void guardarHeapFile();
 
-        /*
-        @author Andrea Cuela
-        */
-        //void saveInformationInFile(Nodo*, std::ofstream&);
-
-        /*
-        @author Andrea Cuela
-        */
-        //void recoverInformationFromHeapFile();
+        void recuperarHeapFile();
 
 
         // ================= LONGITUD FIJA ==================
