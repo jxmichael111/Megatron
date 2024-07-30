@@ -212,7 +212,7 @@ void DiskManager::eliminar(int numBloque, int numRegistro) {
 std::vector<std::string> DiskManager::readBlockToVector(int numBloque) {
     std::vector<std::string> registros;
     std::string carpetaBloque = RUTA_BASE + std::string("Bloques/");
-    std::string archivoBloque = carpetaBloque + std::string("Bloque") + std::to_string(numBloque) + ".txt";
+    std::string archivoBloque = carpetaBloque + "Bloque" + std::to_string(numBloque) + ".txt";
     std::ifstream file(archivoBloque);
 
     if (!file.is_open()) {
@@ -223,7 +223,18 @@ std::vector<std::string> DiskManager::readBlockToVector(int numBloque) {
     std::string line;
     std::getline(file, line); // Ignorar la cabecera
     while (std::getline(file, line)) {
-        registros.push_back(line);
+        std::string info;
+        if (!this->tipoLongitud) {
+            for (int i = 0; i < this->numCampos; ++i) {
+                info += std::to_string(this->tipoCampo[i]);
+                if (i != this->numCampos-1)
+                    info += " ";
+            }
+            info += "|";
+            registros.push_back(info + line);
+        } else {
+            registros.push_back(line);
+        }
     }
 
     file.close();
@@ -661,6 +672,7 @@ void DiskManager::setSizeScheme(const std::string& esquema) {
             if (pos1 != std::string::npos && pos2 != std::string::npos && pos2 > pos1 + 1) {
                 int length = std::stoi(tipo.substr(pos1 + 1, pos2 - pos1 - 1));
                 tipoCampo[i] = length * sizeof(char);
+                this->numCampos = i;
                 size += length * sizeof(char);
             }
         }

@@ -241,16 +241,14 @@ void BufferManager::ModRegister(int pageID, DiskManager* disco) {
             switch(option) {
                 case 1: {
                     int NroRegister;
-                    //ViewPagina(pageID);
+                    ViewPagina(pageID);
                     std::cout << "Que registro deseas Modificar:" << std::endl;
 
                     std::cin >> NroRegister;
 
 
-                    std::vector<int> index = frame->GetIndex();
-                    std::cout <<"hola"<<std::endl;
+                    std::vector<int> index = frame->GetIndex(NroRegister);
                     std::vector<std::string> registeer = frame->GetRegister(NroRegister);
-                    std::cout <<"hola"<<std::endl;
                     std::cout << std::endl;
                     
                     frame->ViewRegister(NroRegister);
@@ -291,7 +289,7 @@ void BufferManager::ModRegister(int pageID, DiskManager* disco) {
                     break;
                 }
                 case 2: {
-                    std::vector<int> index = frame->GetIndex();
+                    std::vector<int> index = frame->GetIndex(1);
                     std::vector<std::string> newRegister(index.size());
 
                     for(int i = 0; i < index.size(); i++) {
@@ -309,7 +307,6 @@ void BufferManager::ModRegister(int pageID, DiskManager* disco) {
                         newRegister[i] = aux;
                     }
 
-
                     std::string row;
                     for(int i = 0; i < newRegister.size(); i++)
                         row += newRegister[i];
@@ -326,8 +323,8 @@ void BufferManager::ModRegister(int pageID, DiskManager* disco) {
 
                     frame->RemoveRegister(NroRegister);
                     std::cout << "Registro eliminado correctamente." << std::endl;
-                    disco->eliminar(pageID,NroRegister);
-                    keepRunning = false; // Exit after deletion as the NroRegister may not be valid anymore
+                    disco->eliminar(pageID,NroRegister+1);
+                    //keepRunning = false; // Exit after deletion as the NroRegister may not be valid anymore
                     break;
                 }
                 case 4: {

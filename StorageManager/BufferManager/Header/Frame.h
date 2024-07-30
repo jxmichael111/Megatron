@@ -24,7 +24,7 @@ public:
     */
     void ViewRegister(int);
 
-    std::vector<int> GetIndex();
+    std::vector<int> GetIndex(int);
 
     std::vector<std::string> GetRegister(int);
 

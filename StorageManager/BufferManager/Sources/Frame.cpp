@@ -4,8 +4,13 @@
 #include "Frame.h"
 
 void Frame::ViewData() {
-    for(int i = 1; i < data.size(); i++) {
-        std::cout << data[i] << std::endl;
+    
+
+    for(int i = 0; i < data.size(); i++) {
+        std::string FirstLine = data[i];
+        size_t pos = FirstLine.find('|');
+        std::string Line = FirstLine.substr(pos + 1);
+        std::cout << Line << std::endl;
     }
 }
 
@@ -106,34 +111,53 @@ std::vector<std::string> Frame::GetData() {
 }
 
 void Frame::ViewRegister(int NroRegister) {
-    std::cout << data[0] << std::endl;
-    std::cout << data[NroRegister] << std::endl;
+    std::string FirstLine = data[NroRegister-1];
+    size_t pos = FirstLine.find('|');
+    std::string aux = FirstLine.substr(pos + 1);
+    
+
+    std::cout << aux << std::endl;
     
 }
 
-std::vector<int> Frame::GetIndex() {
+std::vector<int> Frame::GetIndex(int Register) {
     std::vector<int> index;
     if (!data.empty()) {
-        std::string FirstLine = data[0];
-        std::istringstream iss(FirstLine);
-        std::string word;
+        std::string FirstLine = data[Register-1];
+        size_t pos = FirstLine.find('|');
+        
+        if (pos != std::string::npos) {
+            std::string columnsPart = FirstLine.substr(0, pos);
+            std::istringstream iss(columnsPart);
+            std::string columnSize;
 
-        while (iss >> word) {
-            index.push_back(std::stoi(word));
+            while (iss >> columnSize) {
+                try {
+                    index.push_back(std::stoi(columnSize));
+
+                } catch (const std::invalid_argument& e) {
+
+                    std::cerr << "Error: valor no es un numero válido: " << columnSize << std::endl;
+                } catch (const std::out_of_range& e) {
+                    std::cerr << "Error: número fuera del rango: " << columnSize << std::endl;
+                }
+            }
         }
     }
     return index;
 }
-
 std::vector<std::string> Frame::GetRegister(int NroRegister) {
     std::vector<std::string> Register;
-    std::vector<int> Index = GetIndex();
+    std::vector<int> Index = GetIndex(NroRegister);
 
-    if (NroRegister >= data.size() || Index.empty()) {
+    if (NroRegister-1 >= data.size() || Index.empty()) {
         return Register; 
     }
 
-    std::string Line = data[NroRegister];
+    std::string FirstLine = data[NroRegister-1];
+    size_t pos = FirstLine.find('|');
+
+    std::string Line = FirstLine.substr(pos + 1);
     int Pos = 0;
 
     for (int length : Index) {
@@ -151,15 +175,19 @@ std::vector<std::string> Frame::GetRegister(int NroRegister) {
 
 void Frame::SetRegister(int NroRegister, std::vector<std::string> Register) {
     std::string row;
+    std::string FirstLine = data[NroRegister-1];
+    size_t pos = FirstLine.find('|');
+    std::string Line = FirstLine.substr(0,pos+1);
+
     for(int i = 0; i < Register.size(); i++)
         row += Register[i];
 
-    data[NroRegister]= row;
+    data[NroRegister-1]= Line + row;
 }
 
 void Frame::RemoveRegister(int NroRegister) {
     if (NroRegister < data.size()) {
-        data.erase(data.begin() + NroRegister);
+        data.erase(data.begin() + NroRegister-1);
     }
 }
 

@@ -125,6 +125,7 @@ class DiskManager {
 
 
         int* tipoCampo; //Puntero hacia un arreglo de tipos de campo del esquema seleccionado
+        int numCampos; //Variable que guarda la cantidad de campos del esquema seleccionado
 
     public:
     
