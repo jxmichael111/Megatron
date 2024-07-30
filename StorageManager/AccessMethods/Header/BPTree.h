@@ -9,10 +9,10 @@
 #include <queue>
 
 #include "Node.h"
-#include "C:\Users\Michael\Documents\University\5to semestre\BDII\Megatron\StorageManager\DiskManager\Header\config.h"
+#include "../../DiskManager/Header/config.h"
 
 class BPTree {
-   private:
+    private:
     int maxIntChildLimit;                                   //Limiting  #of children for internal Nodes!
     int maxLeafNodeLimit;                                   // Limiting #of nodes for leaf Nodes!!!
     Node* root;                                             //Pointer to the B+ Tree root
@@ -21,7 +21,7 @@ class BPTree {
     Node** findParent(Node* cursor, Node* child);
     Node* firstLeftNode(Node* cursor);
 
-   public:
+    public:
     BPTree();
     BPTree(int degreeInternal, int degreeLeaf);
     Node* getRoot();
