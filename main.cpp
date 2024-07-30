@@ -742,6 +742,27 @@ bool consulta(std::string& query) {
 /*
 	@author Andrea Cuela Y Michael Ticona
 */
+std::tuple<int, int, int, int, int, int> recuperarStruct() {
+    std::string filename = RUTA_BASE + std::string("discoInfo.txt");
+    std::ifstream file(filename);
+    if (!file.is_open()) {
+        std::cerr << "No existe informacion previa almacenada. Cree la estructura desde 0." << std::endl;
+        return std::make_tuple(-1, -1, -1, -1, -1, -1); // Valores de error
+    }
+
+    int cantidadPlatos, cantidadPistas, cantidadSectores, bytesxSector, cantidadBloques, sectoresxBloque;
+    file >> cantidadPlatos;
+    file >> cantidadPistas;
+    file >> cantidadSectores;
+    file >> bytesxSector;
+    file >> cantidadBloques;
+	file >> sectoresxBloque;
+
+    file.close();
+    std::cout << "Información del disco recuperada correctamente." << std::endl;
+
+    return std::make_tuple(cantidadPlatos, cantidadPistas, cantidadSectores, bytesxSector, cantidadBloques, sectoresxBloque);
+}
 
 
 void menu() {

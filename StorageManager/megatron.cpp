@@ -538,6 +538,15 @@ void Megatron::menuBuffer() {
     }  while (choice != 0);
 }
 
+void Megatron::cargarConfiguracion() {
+    controladorDisco.recuperarHeapFile();
+
+}
+void Megatron::guardarConfiguracion() {
+    controladorDisco.guardarHeapFile();
+    controladorDisco.guardarStruct();
+}
+
 void Megatron::menuBPTree(){
     controladorDisco.MenuTree();
 }

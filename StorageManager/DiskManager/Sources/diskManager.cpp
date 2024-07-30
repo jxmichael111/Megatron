@@ -1,13 +1,10 @@
 #include "diskManager.h"
 
 // ---------------------------Metodos para el BPlusTree---------------------------
-void insertionMethod(BPTree** bPTree) {
-    int postid, userid, hour;
+void insertionMethod(BPTree** bPTree, int postid) {
+    int userid, hour;
     std::string text;
     //indice denso por postid
-
-    std::cout << "\nIndica Postid: ";
-    std::cin >> postid; // >> userid >> hour >> text;
 
     std::string fileName = RUTA_BASE + std::string("DBFiles/");
 
@@ -29,11 +26,7 @@ void insertionMethod(BPTree** bPTree) {
     (*bPTree)->serialize("bptree.dat");
 }
 
-void searchMethod(BPTree* bPTree) {
-    int idx;
-    std::cout << "Cual es el postid? ";
-    std::cin >> idx;
-
+void searchMethod(BPTree* bPTree,int idx) {
     bPTree->search(idx);
 }
 
@@ -49,13 +42,10 @@ void printMethod(BPTree* bPTree) {
         bPTree->seqDisplay(bPTree->getRoot());
 }
 
-void deleteMethod(BPTree* bPTree) {
+void deleteMethod(BPTree* bPTree,int tmp) {
     cout << "Del arbol, cual deseas borrar?: " << endl;
     bPTree->display(bPTree->getRoot());
  
-    int tmp;
-    cout << "Clave a borrar: " << endl;
-    cin >> tmp;
     bPTree->removeKey(tmp);
 
     cout << "Arbol actualizado" << endl;
@@ -81,7 +71,7 @@ DiskManager::DiskManager(bool tipo, int nroPlatos, int nroPistas, int nroSectore
     this->pistaAct = 1;
     this->sectorAct = 1;
     this->bloqueAct = 1;
-    this->bPTree = new BPTree(3,3);
+    this->bPTree = new BPTree(7,7);
 }
 
 // =============================================  GENERAL  ==============================================================
@@ -265,6 +255,7 @@ void DiskManager::guardarStruct() {
     file.close();
     std::cout << "Informacion del disco guardada correctamente." << std::endl;
 }
+
 
 // ================ CONEXIÓN CON BUFFER ============
 
@@ -780,6 +771,10 @@ void DiskManager::useLongitudFija(std::string lineaArchivo) {
     bool is_string = false;
     int i = 0;
 
+    std::istringstream ss(lineaArchivo);
+    std::string parte;
+    std::getline(ss, parte, ',');
+    insertionMethod(&bPTree, std::atoi(parte.c_str()));
     //Convertir a formato de longitud fija
     for (char c : lineaArchivo) {
         if (c == '"') {
@@ -787,6 +782,7 @@ void DiskManager::useLongitudFija(std::string lineaArchivo) {
         } else if (c == ',') {
             if (is_string) {
                 atributo.push_back(c);
+
             } else {
                 if (!atributo.empty()) {
                     registro += atributo;
@@ -1167,11 +1163,17 @@ void DiskManager::MenuTree() {
                 break;
             case 1:
                 // Inserta valores al arbol
-                insertionMethod(&bPTree);
+                int postid;
+                std::cout << "\nIndica Postid: ";
+                std::cin >> postid; // >> userid >> hour >> text;
+                insertionMethod(&bPTree,postid);
                 break;
             case 2:
                 // Busca valores al arbol
-                searchMethod(bPTree);
+                int idx;
+                std::cout << "Cual es el postid? ";
+                std::cin >> idx;
+                searchMethod(bPTree,idx);
                 break;
             case 3:
                 // Imprime el arbol
@@ -1179,7 +1181,10 @@ void DiskManager::MenuTree() {
                 break;
             case 4:
                 // Borra valores del arbol
-                deleteMethod(bPTree);
+                int tmp;
+                cout << "Clave a borrar: " << endl;
+                cin >> tmp;
+                deleteMethod(bPTree,tmp);
                 break;
             case 5:
                 //Genera imagen del arbol
