@@ -10,8 +10,6 @@
 /*
 	@author Andrea Cuela Y Michael Ticona
 */
-
-
 std::string getRutaBase() {
     return std::string(RUTA_BASE);
 }
@@ -749,11 +747,38 @@ bool consulta(std::string& query) {
 void menu() {
 	int option;
     int resp;
+	char answer;
     bool tipoRegistro;
+	int frames;
 
     std::string nombreFile;
 
     Megatron dataBase;
+
+	std::cout << "Indica la cantidad de frames a considerar para el Buffer Pool: ";
+	std::cin >> frames;
+	
+	std::cout << "Desea mantener la configuracion del disco anterior? (S/N) "; 
+	std::cin >> answer;
+	if (answer == 'S' || answer =='s') {
+		auto discoInfo = recuperarStruct();
+
+		dataBase = Megatron(false,
+							std::get<0>(discoInfo),
+							std::get<1>(discoInfo),
+							std::get<2>(discoInfo),
+							std::get<3>(discoInfo),
+							std::get<4>(discoInfo),
+							frames);
+	
+		std::cout << "Cantidad de Platos: " << std::get<0>(discoInfo) << std::endl;
+		std::cout << "Cantidad de Pistas: " << std::get<1>(discoInfo) << std::endl;
+		std::cout << "Cantidad de Sectores: " << std::get<2>(discoInfo) << std::endl;
+		std::cout << "Bytes por Sector: " << std::get<3>(discoInfo) << std::endl;
+		std::cout << "Cantidad de Bloques: " << std::get<4>(discoInfo) << std::endl;
+		
+		dataBase.cargarConfiguracion();
+	}
 
     do {
         std::cout << "\n\n*********************************************************" << std::endl;
@@ -767,7 +792,7 @@ void menu() {
         std::cout << "6. Crear relacion" << std::endl; //
         std::cout << "7. Agregar registro a relacion" << std::endl; //
         std::cout << "8. Realizar consultas" << std::endl; //
-        std::cout << "0. Salir" << std::endl;
+        std::cout << "9. Salir" << std::endl;
         std::cout << "\tIngresa una opcion: ";
         std::cin >> option;
 
@@ -775,7 +800,6 @@ void menu() {
             case 1: {
                 std::cout << "\n*********************************************************" << std::endl;
                 std::cout << "Desea crear disco por DEFAULT? (S/N)" << std::endl;
-                char answer;
                 std::cin >> answer;
 				std::cin.ignore();
 
@@ -807,6 +831,8 @@ void menu() {
                         dataBase = Megatron(tipoRegistro, nroPlatos, nroPistas, nroSectores, bytesxSector, sectoresxBloque, frames); 
                     }
                 }
+
+				dataBase.createStructure();
 
                 break;
             }
@@ -942,6 +968,8 @@ void menu() {
 			}
 			case 9: {
 				//controlador.~Controlador();
+				dataBase.guardarConfiguracion();
+				option = false;
 
 				break;
 			}

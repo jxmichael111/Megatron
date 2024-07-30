@@ -25,7 +25,9 @@ Megatron::Megatron(bool tipo, int nroPlatos, int nroPistas, int nroSectores, int
         }
     }
     archivo.close();
+}
 
+void Megatron::createStructure() {
     controladorDisco.createStructureDisk();
 }
 
