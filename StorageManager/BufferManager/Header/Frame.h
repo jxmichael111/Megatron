@@ -158,4 +158,10 @@ public:
         @author Michael Ticona
     */
     void used();
+
+    void RemoveRegister(int);
+
+    void AddRegister(const std::vector<std::string>);
+
+    bool isVoid();
 };

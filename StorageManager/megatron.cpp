@@ -493,11 +493,11 @@ void Megatron::menuBuffer() {
             std::cin >> operation;
             try {
                 if (operation == 'W' || operation == 'w') {
-                    gestor.requestPage(pageID, operation, controladorDisco.readBlockToVector(pageID));
+                    gestor.requestPage(pageID, operation, controladorDisco.readBlockToVector(pageID), &controladorDisco);
                     std::cout << "Pagina " << pageID << " escrita y marcada como sucia.\n";
                 }
                 else if (operation == 'L' || operation == 'l') {
-                    gestor.requestPage(pageID,operation, controladorDisco.readBlockToVector(pageID));
+                    gestor.requestPage(pageID,operation, controladorDisco.readBlockToVector(pageID), &controladorDisco);
                     std::cout << "Pagina " << pageID << " leida.\n";
                 }
                 //manager.releasePage(pageID);  // Despinnea la página independientemente de la operación para liberar el recurso

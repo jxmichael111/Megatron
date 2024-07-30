@@ -32,7 +32,7 @@ Frame* BufferPool::GetFrame(int frameID) {
 
 void BufferPool::SetData(std::vector<std::string> Data, int frameID) {
     Frame* frame = GetFrame(frameID);
-    if (frame) {
+    if (frame && frame->isVoid()) {
         for (int i = 0; i < Data.size(); i++){
             frame->SetData(Data[i]);
         }

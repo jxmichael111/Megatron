@@ -106,7 +106,8 @@ std::vector<std::string> Frame::GetData() {
 }
 
 void Frame::ViewRegister(int NroRegister) {
-    std::cout << data[NroRegister+1] << std::endl;
+    std::cout << data[0] << std::endl;
+    std::cout << data[NroRegister] << std::endl;
     
 }
 
@@ -128,11 +129,11 @@ std::vector<std::string> Frame::GetRegister(int NroRegister) {
     std::vector<std::string> Register;
     std::vector<int> Index = GetIndex();
 
-    if (NroRegister + 1 >= data.size() || Index.empty()) {
+    if (NroRegister >= data.size() || Index.empty()) {
         return Register; 
     }
 
-    std::string Line = data[NroRegister + 1];
+    std::string Line = data[NroRegister];
     int Pos = 0;
 
     for (int length : Index) {
@@ -153,7 +154,26 @@ void Frame::SetRegister(int NroRegister, std::vector<std::string> Register) {
     for(int i = 0; i < Register.size(); i++)
         row += Register[i];
 
-    data[NroRegister+1]= row;
+    data[NroRegister]= row;
+}
+
+void Frame::RemoveRegister(int NroRegister) {
+    if (NroRegister < data.size()) {
+        data.erase(data.begin() + NroRegister);
+    }
+}
+
+void Frame::AddRegister(std::vector<std::string> Register) {
+    std::string row;
+    for(int i = 0; i < Register.size(); i++)
+        row += Register[i];
+
+    data.push_back(row);
+}
+
+bool Frame::isVoid()
+{
+    return data.empty();
 }
 
 bool Frame::GetDirty()

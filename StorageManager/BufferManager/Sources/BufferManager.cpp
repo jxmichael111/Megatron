@@ -5,7 +5,7 @@
 
 BufferManager::BufferManager(int BufferSize, int capacidad) : bufferPool(BufferSize, capacidad), pageTable() {}
 
-void BufferManager::requestPage(int pageID, char operation, std::vector<std::string> Data) {
+void BufferManager::requestPage(int pageID, char operation, std::vector<std::string> Data, DiskManager* disco) {
     if (pageTable.GetSize() == bufferPool.GetSize() && !pageTable.IsPageMapped(pageID)) {
         if (bufferPool.AllFramesInUse()) {
             char respuesta;
@@ -138,12 +138,7 @@ void BufferManager::requestPage(int pageID, char operation, std::vector<std::str
         char response;
         std::cin >> response;
         if (response == 'S' || response == 's') {
-            int NroRegister;
-            ViewPagina(pageID);
-
-            std::cout << "Que registro deseas Modificar:\n";
-            std::cin >> NroRegister;
-            ModRegister(pageID, NroRegister);
+            ModRegister(pageID, disco);
             std::cout << " pagina modificada" << std::endl;
         }
         else if (response == 'N' || response == 'n') {
@@ -222,7 +217,7 @@ void BufferManager::PrintRequest() {
 }
 
 void BufferManager::ViewPagina(int pageID) {
-    system("cls");  // Limpia la pantalla
+    //system("cls");  // Limpia la pantalla
     auto it = pageTable.pageMap.find(pageID);
     if (it != pageTable.pageMap.end()) {
         int frameID = it->second;
@@ -233,53 +228,126 @@ void BufferManager::ViewPagina(int pageID) {
         std::cout << "La pagina no se encuentra" << std::endl;
     }  
     system("pause");
-    system("cls");  // Limpia la pantalla
+    //system("cls");  // Limpia la pantalla
 }
 
-void BufferManager::ModRegister(int pageID, int NroRegister) {
+void BufferManager::ModRegister(int pageID, DiskManager* disco) {
     auto it = pageTable.pageMap.find(pageID);
     if (it != pageTable.pageMap.end()) {
         int frameID = it->second;
         Frame* frame = bufferPool.GetFrame(frameID);
 
-        std::vector<int> index = frame->GetIndex();
-        std::vector<std::string> registeer = frame->GetRegister(NroRegister);
+        bool keepRunning = true;
+        while (keepRunning) {
+            std::cout << "Seleccione una opcion:" << std::endl;
+            std::cout << "1. Actualizar registro"<< std::endl;
+            std::cout << "2. Insertar nuevo registro" << std::endl;
+            std::cout << "3. Eliminar registro" << std::endl;
+            std::cout << "4. Salir"<< std::endl;
 
-        std::cout << std::endl;
-        frame->ViewRegister(NroRegister);
-        std::cout << "____________________________________" << std::endl;
-        for(int i = 0; i < registeer.size(); i++) {
-            std::cout << "Columa " << i+1 << ": " << registeer[i] << std::endl; 
-        } 
+            int option;
+            std::cin >> option;
+            switch(option) {
+                case 1: {
+                    int NroRegister;
+                    //ViewPagina(pageID);
 
-        int col;
-        std::cout << "Que columan desea Modificar:" << std::endl; 
-        std::cin >> col;
-        if (col-1 <= index.size()) {
-            std::cout << registeer[col-1] << std::endl;
-            std::cout << "_____________________________________________" << std::endl;
+                    std::cout << "Que registro deseas Modificar:\n";
+                    std::cin >> NroRegister;
 
-            std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+                    std::vector<int> index = frame->GetIndex();
+                    std::vector<std::string> registeer = frame->GetRegister(NroRegister);
+                    std::cout << std::endl;
+                    
+                    frame->ViewRegister(NroRegister);
+                    std::cout << "____________________________________" << std::endl;
+                    for(int i = 0; i < registeer.size(); i++) {
+                        std::cout << "Columa " << i+1 << ": " << registeer[i] << std::endl; 
+                    } 
 
-            std::string aux;
-            std::getline(std::cin, aux);
-            
-            if(aux.size() <= index[col-1]) 
-                aux = aux.substr(0, 60);
+                    int col;
+                    std::cout << "Que columna desea Modificar:" << std::endl; 
+                    std::cin >> col;
+                    if (col-1 < index.size()) {
+                        std::cout << registeer[col-1] << std::endl;
+                        std::cout << "_____________________________________________" << std::endl;
 
-            for(int i = aux.size(); i < index[col-1]; i ++) 
-               aux += " ";
+                        std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
 
-            registeer[col-1] = aux;
-            frame->SetRegister(NroRegister, registeer);
+                        std::string aux;
+                        std::getline(std::cin, aux);
+                        
+                        if(aux.size() <= index[col-1]) 
+                            aux = aux.substr(0, index[col-1]);
+
+                        for(int i = aux.size(); i < index[col-1]; i ++) 
+                            aux += " ";
+
+                        registeer[col-1] = aux;
+                        frame->SetRegister(NroRegister, registeer);
+
+                        std::string row;
+                        for(int i = 0; i < registeer.size(); i++)
+                            row += registeer[i];
+
+                        disco->actualizar(pageID,row,NroRegister);
+                    } else {
+                        std::cout << "Columna excedida" << std::endl;
+                    }
+                    break;
+                }
+                case 2: {
+                    std::vector<int> index = frame->GetIndex();
+                    std::vector<std::string> newRegister(index.size());
+
+                    for(int i = 0; i < index.size(); i++) {
+                        std::cout << "Ingrese el valor para la columna " << i+1 << ": ";
+                        std::string aux;
+                        std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+                        std::getline(std::cin, aux);
+
+                        if(aux.size() <= index[i]) 
+                            aux = aux.substr(0, index[i]);
+
+                        for(int j = aux.size(); j < index[i]; j ++) 
+                            aux += " ";
+
+                        newRegister[i] = aux;
+                    }
+
+
+                    std::string row;
+                    for(int i = 0; i < newRegister.size(); i++)
+                        row += newRegister[i];
+                    frame->AddRegister(newRegister);
+                    disco->insertar(row);
+                    std::cout << "Registro insertado correctamente." << std::endl;
+                    break;
+                }
+                case 3: {
+                    int NroRegister;
+                    ViewPagina(pageID);
+                    std::cout << "Que registro deseas Eliminar:\n";
+                    std::cin >> NroRegister;
+
+                    frame->RemoveRegister(NroRegister);
+                    std::cout << "Registro eliminado correctamente." << std::endl;
+                    disco->eliminar(pageID,NroRegister);
+                    keepRunning = false; // Exit after deletion as the NroRegister may not be valid anymore
+                    break;
+                }
+                case 4: {
+                    keepRunning = false;
+                    break;
+                }
+                default: {
+                    std::cout << "Opcion invalida. Intente nuevamente." << std::endl;
+                    break;
+                }
+            }
         }
-        else {
-            std::cout << "columna exedida" << std::endl;
-        }
-
     } else {
         std::cout << "La pagina no se encuentra" << std::endl;
     } 
 }
-
 

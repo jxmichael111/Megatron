@@ -5,6 +5,7 @@
 
 #include "BufferPool.h"
 #include "PageTable.h"
+#include "C:\Users\Michael\Documents\University\5to semestre\BDII\Megatron\StorageManager\DiskManager\Header\diskManager.h"
 
 
 class BufferManager {
@@ -36,7 +37,7 @@ public:
     /*
         @author Michael Ticona
     */
-    void requestPage(int, char, std::vector<std::string>);
+    void requestPage(int, char, std::vector<std::string>, DiskManager*);
     /*
     Esta función solicita una página con el ID dado. Primero, intenta obtener el ID de marco asociado con el ID de 
     página de la tabla de páginas. Si la página no está en memoria, la carga utilizando la función setPage(). 
@@ -80,5 +81,5 @@ public:
     void ViewPagina(int);
 
 
-    void ModRegister(int, int);
+    void ModRegister(int, DiskManager*);
 };

@@ -229,9 +229,9 @@ std::vector<std::string> DiskManager::readBlockToVector(int numBloque) {
     file.close();
     return registros;
 }
-
-/*std::tuple<int, int> DiskManager::buscarID(const std::string& id) {
-    for (int i = 0; i < disconumBloques; ++i) {
+/*
+std::tuple<int, int> DiskManager::buscarID(const std::string& id) {
+    for (int i = 0; i < numBloques(); ++i) {
         std::vector<std::string> registros = readBlockToVector(i);
         for (size_t j = 0; j < registros.size(); ++j) {
             if (registros[j].find(id) != std::string::npos) {
@@ -239,9 +239,9 @@ std::vector<std::string> DiskManager::readBlockToVector(int numBloque) {
             }
         }
     }
-    return std::make_tuple(-1, -1); // ID no encontrado
-}*/
-
+    return std::make_tuple(-1, -1); // ID no encontrado
+}
+//*/
 
 // ============================================ HEAP FILE ===================================================
 

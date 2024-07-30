@@ -1,6 +1,5 @@
 #include "megatron.h"
 #include "config.h"
-#include "BPTree.h"
 
 #include <iostream>
 #include <string>
@@ -1018,7 +1017,7 @@ void menu() {
 
 }
 
-//*
+/*
 int main() {
     cout << "\n************* Menu B+ Tree *************\n";
 
@@ -1084,7 +1083,7 @@ int main() {
 }
 //*/
 
-/*
+//*
 int main() {
     
 	menu();

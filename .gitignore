@@ -1,5 +1,7 @@
 /build/
 /Disco/
+/Bloques/
+/Sectores/
 /DBFiles/
 *.txt
 !CMakeLists.txt

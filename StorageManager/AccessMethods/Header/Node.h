@@ -4,8 +4,6 @@
 #include <string>
 #include <sstream>
 
-#include "C:\Users\Michael\Documents\University\5to semestre\BDII\Megatron\StorageManager\DiskManager\Header\config.h"
-
 using namespace std;
 
 class Node {
