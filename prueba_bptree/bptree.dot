@@ -1,0 +1,10 @@
+digraph BPTree {
+node [shape=record];
+node0 [label="<f0> 7 | <f1> 504 | <f2>"];
+node1 [label="<f0> 5 | <f1> 6 | <f2>"];
+node0:f0 -> node1;
+node2 [label="<f0> 7 | <f1> 8 | <f2> 32 | <f3>"];
+node0:f1 -> node2;
+node3 [label="<f0> 504 | <f1> 506 | <f2>"];
+node0:f2 -> node3;
+}
