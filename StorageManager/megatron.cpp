@@ -25,7 +25,9 @@ Megatron::Megatron(bool tipo, int nroPlatos, int nroPistas, int nroSectores, int
         }
     }
     archivo.close();
+}
 
+void Megatron::createStructure() {
     controladorDisco.createStructureDisk();
 }
 
@@ -534,6 +536,15 @@ void Megatron::menuBuffer() {
             std::cout << "Opcion no valida. Intente de nuevo.\n";
         }
     }  while (choice != 0);
+}
+
+void Megatron::cargarConfiguracion() {
+    controladorDisco.recuperarHeapFile();
+
+}
+void Megatron::guardarConfiguracion() {
+    controladorDisco.guardarHeapFile();
+    controladorDisco.guardarStruct();
 }
 
 

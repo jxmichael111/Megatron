@@ -183,6 +183,8 @@ class DiskManager {
         */
         void showSectorContent(int, char, int, int); //Imprime el contenido de un sector
 
+        void guardarStruct();
+
         // ================ CONEXIÓN CON BUFFER ============
 
         void insertar(std::string linea);

@@ -183,6 +183,25 @@ void DiskManager::showSectorContent(int plato, char superficie, int pista, int s
     archivo.close();
 }
 
+void DiskManager::guardarStruct() {
+    std::string filename = RUTA_BASE + std::string("discoInfo.txt");
+    std::ofstream file(filename);
+    if (!file.is_open()) {
+        std::cerr << "Error al abrir el archivo para escribir." << std::endl;
+        return;
+    }
+
+    file << disco.getCantidadPlatos() << std::endl;
+    file << disco.getCantidadPistas() << std::endl;
+    file << disco.getCantidadSectores() << std::endl;
+    file << disco.getBytesxSector() << std::endl;
+    file << disco.getCantidadBloques() << std::endl;
+    file << disco.getCantidadSectoresxBloque() << std::endl;
+
+    file.close();
+    std::cout << "Informacion del disco guardada correctamente." << std::endl;
+}
+
 // ================ CONEXIÓN CON BUFFER ============
 
 void DiskManager::insertar(std::string linea) {
@@ -921,7 +940,11 @@ void DiskManager::actualizarLineaLongitudFija(int numBloque, const std::string& 
     this->platoAct = std::get<0>(*tupla);
     this->superfAct = std::get<1>(*tupla);
     this->pistaAct = std::get<2>(*tupla);
-    this->sectorAct = std::get<3>(*tupla);
+    this->sectorAct = std::get<3>(*tupla);    
+    std::cout << "Plato Actual: " << this->platoAct
+                << "; Superficie Actual: " << this->superfAct
+                << "; Pista Actual: " << this->pistaAct
+                << "; Sector Actual: " << this->sectorAct << std::endl;
 
     std::string archivoSector = RUTA_BASE + std::string("Sectores/") + std::to_string(this->platoAct) + "-" + this->superfAct + "-" + std::to_string(this->pistaAct) + "-" + std::to_string(this->sectorAct) + ".txt";
 

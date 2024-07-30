@@ -29,6 +29,8 @@ class Megatron {
         */
         Megatron(bool longitud, int nroPlatos, int nroPistas, int nroSectores, int bytesxSector, int sectoresxBloque, int frames); //constructor
         
+        void createStructure();
+        
         // Sets ----------------------------------------------------------------------------
 
         /*
@@ -80,6 +82,9 @@ class Megatron {
         @author Michael Ticona
         */
         void menuBuffer(); 
+
+        void cargarConfiguracion();
+        void guardarConfiguracion();
 
         
         //~Megatron();
