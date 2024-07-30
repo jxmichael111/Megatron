@@ -1,6 +1,5 @@
 #include "megatron.h"
 #include "config.h"
-
 #include <iostream>
 #include <string>
 #include <fstream>
@@ -16,20 +15,6 @@
 std::string getRutaBase() {
     return std::string(RUTA_BASE);
 }
-
-void deleteMethod(BPTree* bPTree) {
-    cout << "Del arbol, cual deseas borrar?: " << endl;
-    bPTree->display(bPTree->getRoot());
- 
-    int tmp;
-    cout << "Clave a borrar: " << endl;
-    cin >> tmp;
-    bPTree->removeKey(tmp);
-
-    cout << "Arbol actualizado" << endl;
-    bPTree->display(bPTree->getRoot());
-}
-
 
 void trim(std::string &str) {
     str.erase(str.begin(), std::find_if(str.begin(), str.end(), [](int ch) {
@@ -760,54 +745,6 @@ bool consulta(std::string& query) {
 	@author Andrea Cuela Y Michael Ticona
 */
 
-// ---------------------------Metodos para el BPlusTree---------------------------
-void insertionMethod(BPTree** bPTree) {
-    int postid, userid, hour;
-    std::string text;
-    //indice denso por postid
-
-    std::cout << "\nIndica Postid: ";
-    std::cin >> postid; // >> userid >> hour >> text;
-
-    std::string fileName = getRutaBase() + std::string("DBFiles/");
-
-    //nombre del archivo con el cual se encuentra
-    fileName += to_string(postid) + ".txt";
-    FILE* filePtr = fopen(fileName.c_str(), "w");
-    std::string userTuple = to_string(postid) + "|"
-                        + to_string(userid) + "|" 
-                        + to_string(hour) + "|" 
-                        + text +  "\n";
-    fprintf(filePtr, "%s", userTuple.c_str());
-
-    //indice denso por postid
-    (*bPTree)->insert(postid, filePtr);
-    fclose(filePtr);
-    std::cout << "Se inserto el postid:" << postid <<endl;
-
-    //LLENAR EL ARBOL
-    (*bPTree)->serialize("bptree.dat");
-}
-
-void searchMethod(BPTree* bPTree) {
-    int idx;
-    std::cout << "Cual es el postid? ";
-    std::cin >> idx;
-
-    bPTree->search(idx);
-}
-
-void printMethod(BPTree* bPTree) {
-    int opt;
-    std::cout << "\n\t1.Arbol de niveles \n\t2. Forma secuencial\n";
-    std::cin >> opt;
-
-    std::cout << endl;
-    if (opt == 1)
-        bPTree->display(bPTree->getRoot());
-    else
-        bPTree->seqDisplay(bPTree->getRoot());
-}
 
 void menu() {
 	int option;
@@ -822,7 +759,7 @@ void menu() {
         std::cout << "\n\n*********************************************************" << std::endl;
         std::cout << "--------- MENU SISTEMA GESTOR DE BASE DE DATOS ----------" << std::endl;
         std::cout << "1. Crear estructura inicial (disco y buffer)" << std::endl; //HECHO
-		//std::cout << "2. Definir Buffer Pool" << std::endl; //
+		std::cout << "2. Menu BPlusTree" << std::endl; //
 		std::cout << "3. Menu disco Manager" << std::endl; //HECHO
 		std::cout << "4. Menu buffer Manager" << std::endl; //
 		std::cout << "***** MEGATRON *****" << std::endl; 
@@ -845,7 +782,6 @@ void menu() {
 				std::cout << "Ingrese la cantidad de frames deseados para el BufferPool" << std::endl;
                 int frames;
                 std::cin >> frames;
-
                 std::cin.ignore();
                 if (answer == 'S' || answer == 's' || answer == 'N' || answer == 'n') {
                     tipoRegistro = false;
@@ -875,7 +811,7 @@ void menu() {
                 break;
             }
             case 2: {
-				
+				dataBase.menuBPTree();				
 
 				break;
 			}
@@ -1046,6 +982,7 @@ int main() {
 
                 if (bPTree->getRoot() == nullptr) {
                     std::cerr << "Error: No se pudo recuperar el árbol." << std::endl;
+
                 } else {
                     std::cout << "Árbol recuperado exitosamente." << std::endl;
                 }

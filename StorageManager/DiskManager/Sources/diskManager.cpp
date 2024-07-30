@@ -1,5 +1,68 @@
 #include "diskManager.h"
 
+// ---------------------------Metodos para el BPlusTree---------------------------
+void insertionMethod(BPTree** bPTree) {
+    int postid, userid, hour;
+    std::string text;
+    //indice denso por postid
+
+    std::cout << "\nIndica Postid: ";
+    std::cin >> postid; // >> userid >> hour >> text;
+
+    std::string fileName = RUTA_BASE + std::string("DBFiles/");
+
+    //nombre del archivo con el cual se encuentra
+    fileName += to_string(postid) + ".txt";
+    FILE* filePtr = fopen(fileName.c_str(), "w");
+    std::string userTuple = to_string(postid) + "|"
+                        + to_string(userid) + "|" 
+                        + to_string(hour) + "|" 
+                        + text +  "\n";
+    fprintf(filePtr, "%s", userTuple.c_str());
+
+    //indice denso por postid
+    (*bPTree)->insert(postid, filePtr);
+    fclose(filePtr);
+    std::cout << "Se inserto el postid:" << postid <<endl;
+
+    //LLENAR EL ARBOL
+    (*bPTree)->serialize("bptree.dat");
+}
+
+void searchMethod(BPTree* bPTree) {
+    int idx;
+    std::cout << "Cual es el postid? ";
+    std::cin >> idx;
+
+    bPTree->search(idx);
+}
+
+void printMethod(BPTree* bPTree) {
+    int opt;
+    std::cout << "\n\t1.Arbol de niveles \n\t2. Forma secuencial\n";
+    std::cin >> opt;
+
+    std::cout << endl;
+    if (opt == 1)
+        bPTree->display(bPTree->getRoot());
+    else
+        bPTree->seqDisplay(bPTree->getRoot());
+}
+
+void deleteMethod(BPTree* bPTree) {
+    cout << "Del arbol, cual deseas borrar?: " << endl;
+    bPTree->display(bPTree->getRoot());
+ 
+    int tmp;
+    cout << "Clave a borrar: " << endl;
+    cin >> tmp;
+    bPTree->removeKey(tmp);
+
+    cout << "Arbol actualizado" << endl;
+    bPTree->display(bPTree->getRoot());
+}
+
+// ==========================================================================
 void eliminarLinea(const std::string& archivoEntrada, const std::string& archivoSalida, int numLineaEliminar);
 template <typename Cabecera>
 void reemplazarCabecera(const std::string& archivo, const Cabecera& nuevaCabecera);
@@ -18,6 +81,7 @@ DiskManager::DiskManager(bool tipo, int nroPlatos, int nroPistas, int nroSectore
     this->pistaAct = 1;
     this->sectorAct = 1;
     this->bloqueAct = 1;
+    this->bPTree = new BPTree(3,3);
 }
 
 // =============================================  GENERAL  ==============================================================
@@ -1054,6 +1118,57 @@ void DiskManager::eliminarLineaLongitudFija(int numBloque, int numRegistro) {
     reemplazarCabecera(archivoSector, nuevaCabeceraSector);
 }
 
+void DiskManager::MenuTree() {
+    bool flag = true;
+    int option;
+
+    do {
+        
+        cout << "0: Recuperar arbol \n1: Insertar \n2: Buscar \n3: Imprimir arbol\n4: Borrar\n5: Generar imagen del arbol\n6: Salir" << endl;
+        cout << "\tElija una opcion : ";
+        cin >> option;
+
+        switch (option) {
+            case 0:
+                // Recuperar el arbol
+                std::cout << "Recuperando el árbol..." << std::endl;
+
+                bPTree->deserialize("bptree.dat");
+
+                if (bPTree->getRoot() == nullptr) {
+                    std::cerr << "Error: No se pudo recuperar el árbol." << std::endl;
+                } else {
+                    std::cout << "Árbol recuperado exitosamente." << std::endl;
+                }
+
+                break;
+            case 1:
+                // Inserta valores al arbol
+                insertionMethod(&bPTree);
+                break;
+            case 2:
+                // Busca valores al arbol
+                searchMethod(bPTree);
+                break;
+            case 3:
+                // Imprime el arbol
+                printMethod(bPTree);
+                break;
+            case 4:
+                // Borra valores del arbol
+                deleteMethod(bPTree);
+                break;
+            case 5:
+                //Genera imagen del arbol
+                bPTree->toDot("bptree.dot");
+                std::cout << "El archivo DOT se ha generado como 'bptree.dot'. Usa Graphviz para visualizarlo." << std::endl;
+                break;
+            default:
+                flag = false;
+                break;
+        }
+    }while (flag);
+}
 
 // ============================================= LONGITUD VARIABLE  =====================================================
 
@@ -1205,3 +1320,4 @@ std::string removerPrimerElemento(const std::string& cadena) {
     }
     return cadena.substr(pos + 1);
 }
+

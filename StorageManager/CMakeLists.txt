@@ -19,4 +19,4 @@ set(SOURCES
 add_library(StorageManager ${SOURCES})
 
 # Enlazar las sublibrerías
-target_link_libraries(StorageManager AccessMethods BufferManager DiskManager)
+target_link_libraries(StorageManager BufferManager DiskManager AccessMethods)

@@ -5,6 +5,7 @@
 #include "BufferManager.h"
 #include "config.h"
 
+
 #include <iostream>
 #include <string>
 #include <sstream>
@@ -80,6 +81,7 @@ class Megatron {
         @author Michael Ticona
         */
         void menuBuffer(); 
+        void menuBPTree();
 
         
         //~Megatron();

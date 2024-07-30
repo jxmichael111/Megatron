@@ -104,6 +104,7 @@ struct CabeceraSector {
 class DiskManager {
     private:        
         Disk disco; // Declaración de clase disco
+        BPTree* bPTree;
 
         bool tipoLongitud; //TRUE si es longitud variable, FALSE si es fija
         int longitudRegistro; //Variable que guarda la longitud de registro en caso sea de LONGITUD FIJA
@@ -322,6 +323,8 @@ class DiskManager {
 
         void eliminarLineaLongitudFija(int numBloque, int numRegistro);
 
+        void MenuTree();
+
         // ================= LONGITUD VARIABLE ==============
 
 
@@ -330,5 +333,6 @@ class DiskManager {
 
         ~DiskManager();
 };
+
 
 #endif

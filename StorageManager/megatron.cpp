@@ -536,6 +536,9 @@ void Megatron::menuBuffer() {
     }  while (choice != 0);
 }
 
+void Megatron::menuBPTree(){
+    controladorDisco.MenuTree();
+}
 
 /*~Megatron() {
     delete[] arreglo_encabezados;
