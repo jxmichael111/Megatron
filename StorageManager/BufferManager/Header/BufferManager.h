@@ -1,11 +1,12 @@
 #pragma once
+
 #include <string>
 #include <vector>
 #include <limits> 
 
 #include "BufferPool.h"
 #include "PageTable.h"
-#include "C:\Users\Michael\Documents\University\5to semestre\BDII\Megatron\StorageManager\DiskManager\Header\diskManager.h"
+#include "../../DiskManager/Header/diskManager.h"
 
 
 class BufferManager {

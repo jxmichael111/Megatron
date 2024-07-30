@@ -4,8 +4,8 @@
 #include "Frame.h"
 
 void Frame::ViewData() {
-    for(int i = 0; i < data.size(); i++) {
-        std::cout << data[i+1] << std::endl;
+    for(int i = 1; i < data.size(); i++) {
+        std::cout << data[i] << std::endl;
     }
 }
 
@@ -101,7 +101,7 @@ void Frame::SetData(std::string registro) {
     data.push_back(registro);
 }
 
-std::vector<std::string> Frame::GetData() {
+std::vector<std::string> Frame::GetData() { 
     return data;
 }
 

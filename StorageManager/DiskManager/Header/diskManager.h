@@ -19,7 +19,7 @@
 #include <algorithm>
 
 #include "config.h"
-#include "C:\Users\Michael\Documents\University\5to semestre\BDII\Megatron\StorageManager\AccessMethods\Header\BPTree.h"
+#include "../../AccessMethods/Header/BPTree.h"
 
 namespace fs = std::filesystem;
 

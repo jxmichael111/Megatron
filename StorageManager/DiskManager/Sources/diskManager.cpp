@@ -715,7 +715,7 @@ void DiskManager::useLongitudFija(std::string lineaArchivo) {
     Nodo* bloque = this->freeSpaceInicial;
 
     do {
-        std::string archivoBloque = RUTA_BASE + std::string("/Bloques/Bloque") + std::to_string(bloque->numeroBloque) + std::string(".txt");
+        std::string archivoBloque = RUTA_BASE + std::string("Bloques/Bloque") + std::to_string(bloque->numeroBloque) + std::string(".txt");
         std::ifstream archivoReadBloque(archivoBloque, std::ios::app);
 
         if (!archivoReadBloque) {
@@ -898,7 +898,7 @@ void DiskManager::sectorFillLongitudFija(const std::string& lineaArchivo, int ub
 void DiskManager::actualizarLineaLongitudFija(int numBloque, const std::string& nuevaLinea, int numRegistro) {
     Nodo* bloque = searchBlockHeapFile(numBloque);
 
-    std::string archivoBloque = RUTA_BASE + std::string("/Bloques/Bloque") + std::to_string(bloque->numeroBloque) + std::string(".txt");
+    std::string archivoBloque = RUTA_BASE + std::string("Bloques/Bloque") + std::to_string(bloque->numeroBloque) + std::string(".txt");
     std::ifstream archivoReadBloque(archivoBloque, std::ios::app);
     actualizarLineaLongitudFija(archivoBloque, nuevaLinea, numRegistro);
 
@@ -961,7 +961,7 @@ void DiskManager::actualizarLineaLongitudFija(const std::string& archivo, const 
 
 void DiskManager::eliminarLineaLongitudFija(int numBloque, int numRegistro) {
     Nodo* bloque = searchBlockHeapFile(numBloque);
-    std::string archivoBloque = RUTA_BASE + std::string("/Bloques/Bloque") + std::to_string(numBloque) + std::string(".txt");
+    std::string archivoBloque = RUTA_BASE + std::string("Bloques/Bloque") + std::to_string(numBloque) + std::string(".txt");
     std::string lineaEliminada;
 
     std::ifstream archivoReadBloque(archivoBloque, std::ios::app);

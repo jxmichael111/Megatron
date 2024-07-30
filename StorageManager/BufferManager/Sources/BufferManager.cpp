@@ -134,16 +134,7 @@ void BufferManager::requestPage(int pageID, char operation, std::vector<std::str
                 }
             }
         }
-        std::cout << "Desea Modificar? (S/N)" << std::endl;
-        char response;
-        std::cin >> response;
-        if (response == 'S' || response == 's') {
             ModRegister(pageID, disco);
-            std::cout << " pagina modificada" << std::endl;
-        }
-        else if (response == 'N' || response == 'n') {
-            std::cout << " pagina no modificada" << std::endl;
-        }
     }
 }
 
@@ -217,7 +208,7 @@ void BufferManager::PrintRequest() {
 }
 
 void BufferManager::ViewPagina(int pageID) {
-    //system("cls");  // Limpia la pantalla
+    system("cls");  // Limpia la pantalla
     auto it = pageTable.pageMap.find(pageID);
     if (it != pageTable.pageMap.end()) {
         int frameID = it->second;
@@ -228,7 +219,7 @@ void BufferManager::ViewPagina(int pageID) {
         std::cout << "La pagina no se encuentra" << std::endl;
     }  
     system("pause");
-    //system("cls");  // Limpia la pantalla
+    system("cls");  // Limpia la pantalla
 }
 
 void BufferManager::ModRegister(int pageID, DiskManager* disco) {
@@ -251,12 +242,15 @@ void BufferManager::ModRegister(int pageID, DiskManager* disco) {
                 case 1: {
                     int NroRegister;
                     //ViewPagina(pageID);
+                    std::cout << "Que registro deseas Modificar:" << std::endl;
 
-                    std::cout << "Que registro deseas Modificar:\n";
                     std::cin >> NroRegister;
 
+
                     std::vector<int> index = frame->GetIndex();
+                    std::cout <<"hola"<<std::endl;
                     std::vector<std::string> registeer = frame->GetRegister(NroRegister);
+                    std::cout <<"hola"<<std::endl;
                     std::cout << std::endl;
                     
                     frame->ViewRegister(NroRegister);
