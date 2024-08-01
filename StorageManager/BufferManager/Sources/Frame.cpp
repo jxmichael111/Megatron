@@ -7,10 +7,13 @@ void Frame::ViewData() {
     
 
     for(int i = 0; i < data.size(); i++) {
+        /*
         std::string FirstLine = data[i];
         size_t pos = FirstLine.find('|');
         std::string Line = FirstLine.substr(pos + 1);
         std::cout << Line << std::endl;
+        //*/
+        std::cout << data[i] << std::endl;
     }
 }
 

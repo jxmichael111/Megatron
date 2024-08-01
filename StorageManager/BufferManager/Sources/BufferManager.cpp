@@ -320,10 +320,17 @@ void BufferManager::ModRegister(int pageID, DiskManager* disco) {
                     ViewPagina(pageID);
                     std::cout << "Que registro deseas Eliminar:\n";
                     std::cin >> NroRegister;
-
-                    frame->RemoveRegister(NroRegister);
+                    for(int i = 1; i <= bufferPool.GetSize(); i++){
+                        std::vector<std::string> index = frame->GetRegister(i);
+                        std::cout <<  index[0] <<std::endl;
+                        if(std::atoi(index[0].c_str()) == NroRegister){
+                            std::cout << i <<std::endl;
+                            frame->RemoveRegister(i);
+                            disco->eliminar(pageID,i+1,NroRegister);
+                        }
+                    }
                     std::cout << "Registro eliminado correctamente." << std::endl;
-                    disco->eliminar(pageID,NroRegister+1);
+                    
                     //keepRunning = false; // Exit after deletion as the NroRegister may not be valid anymore
                     break;
                 }

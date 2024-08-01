@@ -70,7 +70,8 @@ void Megatron::crearEsquemaDesdeCsv(const std::string file, int cant){
                 esquema = "Titanic#PassengerId#int#Survived#bool#Pclass#char#Name#varchar(60)#Sex#varchar(6)#Age#int#SibSp#bool#Parch#char#Ticket#varchar(16)#Fare#varchar(10)#Cabin#varchar(5)#Embarked#char";
             else 
                 esequema = "Posts .................................................................."*/
-            esquema = "Titanic#PassengerId#int#Survived#bool#Pclass#char#Name#varchar(60)#Sex#varchar(6)#Age#int#SibSp#bool#Parch#char#Ticket#varchar(16)#Fare#varchar(10)#Cabin#varchar(5)#Embarked#char";
+            //esquema = "Titanic#PassengerId#int#Survived#bool#Pclass#char#Name#varchar(60)#Sex#varchar(6)#Age#int#SibSp#bool#Parch#char#Ticket#varchar(16)#Fare#varchar(10)#Cabin#varchar(5)#Embarked#char";
+            esquema = "Posts#postId#int#user#varchar(4)#date#int#contenido#varchar(50)#";
         } else {            
             while (lineaArchivo[i] != '\0') {
                 if (lineaArchivo[i] == ',') {

@@ -192,7 +192,7 @@ class DiskManager {
 
         void actualizar(int numBloque, std::string linea, int numRegistro);
 
-        void eliminar(int numBloque, int numRegistro);
+        void eliminar(int numBloque, int numRegistro,int num);
 
         std::string leer(int numBloque, int numRegistro);
 

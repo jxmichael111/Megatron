@@ -1,9 +1,7 @@
 #include "diskManager.h"
 
 // ---------------------------Metodos para el BPlusTree---------------------------
-void insertionMethod(BPTree** bPTree, int postid) {
-    int userid, hour;
-    std::string text;
+void insertionMethod(BPTree** bPTree, int postid, int userid,int hour,std::string text ) {
     //indice denso por postid
 
     std::string fileName = RUTA_BASE + std::string("DBFiles/");
@@ -18,6 +16,7 @@ void insertionMethod(BPTree** bPTree, int postid) {
     fprintf(filePtr, "%s", userTuple.c_str());
 
     //indice denso por postid
+
     (*bPTree)->insert(postid, filePtr);
     fclose(filePtr);
     std::cout << "Se inserto el postid:" << postid <<endl;
@@ -275,11 +274,12 @@ void DiskManager::actualizar(int numBloque, std::string linea, int numRegistro) 
     }
 }
 
-void DiskManager::eliminar(int numBloque, int numRegistro) {
+void DiskManager::eliminar(int numBloque, int numRegistro,int num) {
     if(this->tipoLongitud) {
         //useLongitudVariable(numBloque, numRegistro);
     } else {
         eliminarLineaLongitudFija(numBloque, numRegistro);
+        deleteMethod(bPTree,num);
     }
 }
 
@@ -365,10 +365,20 @@ void DiskManager::insertBlocktoFullHeapFile(int numBloque, int espLibre, const s
 }
 
 void DiskManager::showFullHeapFile() {
-    Nodo* actual = this->fullSpaceInicial;
-    while (actual) {
-        printBlockInformation(actual);
-        actual = actual->next;
+    std::cout << "============ LISTA DE BLOQUES VACIOS ===============" << std::endl;
+    Nodo* actualfree = this->freeSpaceInicial;
+    while (actualfree) {
+        printBlockInformation(actualfree);
+        actualfree = actualfree->next;
+    }
+    if(!this->freeSpaceInicial)
+        std::cout << "La lista de Bloques vacios esta vacia" << std::endl;
+    
+    std::cout << "============ LISTA DE BLOQUES LLENOS ===============" << std::endl;
+    Nodo* actualfull = this->fullSpaceInicial;
+    while (actualfull) {
+        printBlockInformation(actualfull);
+        actualfull = actualfull->next;
     }
     if(!this->fullSpaceInicial)
         std::cout << "La lista de Bloques llenos esta vacia" << std::endl;
@@ -705,26 +715,27 @@ void DiskManager::recuperarHeapFile() {
 */
 void DiskManager::setSizeScheme(const std::string& esquema) {
     std::stringstream ss(esquema);
-    std::string campo;
-    std::string tipo;
+    std::string temp, campo, tipo;
+
+    std::vector<std::string> campos;
+    while (std::getline(ss, temp, '#')) {
+        campos.push_back(temp);
+    }
+
+    if (campos.size() % 2 != 1) {
+        std::cerr << "Esquema inválido." << std::endl;
+        return;
+    }
 
     int size = 0;
+    int numCampos = (campos.size() - 1) / 2;
+    tipoCampo = new int[numCampos];
+
     int i = 0;
+    for (size_t j = 1; j < campos.size(); j += 2) {
+        campo = campos[j];
+        tipo = campos[j + 1];
 
-    std::stringstream ssCount(esquema);
-    std::string temp;
-    int count = 0;
-    std::getline(ssCount, temp, '#');
-
-    while (std::getline(ssCount, temp, '#')) {
-        count++;
-    }
-    count /= 2; 
-
-    tipoCampo = new int[count];
-    
-    std::getline(ss, temp, '#');
-    while (std::getline(ss, campo, '#') && std::getline(ss, tipo, '#')) {
         if (tipo == "int") {
             tipoCampo[i] = sizeof(int);
             size += sizeof(int);
@@ -746,18 +757,19 @@ void DiskManager::setSizeScheme(const std::string& esquema) {
             if (pos1 != std::string::npos && pos2 != std::string::npos && pos2 > pos1 + 1) {
                 int length = std::stoi(tipo.substr(pos1 + 1, pos2 - pos1 - 1));
                 tipoCampo[i] = length * sizeof(char);
-                this->numCampos = i;
                 size += length * sizeof(char);
+                
             }
         }
         ++i;
     }
+    this->numCampos = i;
 
-    std::cout << "Tamanio del registro: " << size << std::endl;
+    std::cout << "Tamaño del registro: " << size << " bytes" << std::endl;
     setLongitudRegistro(size);
-    
+
     for (int j = 0; j < i; ++j) {
-        std::cout << "Type size at index " << j << ": " << tipoCampo[j] << " bytes\n";
+        std::cout << "Tamaño del tipo en el índice " << j << ": " << tipoCampo[j] << " bytes\n";
     }
 }
 
@@ -772,9 +784,17 @@ void DiskManager::useLongitudFija(std::string lineaArchivo) {
     int i = 0;
 
     std::istringstream ss(lineaArchivo);
-    std::string parte;
-    std::getline(ss, parte, ',');
-    insertionMethod(&bPTree, std::atoi(parte.c_str()));
+    std::string postid;
+    std::getline(ss, postid, ',');
+    std::string userid;
+    std::getline(ss, userid, ',');
+    
+    std::string hour;
+    std::getline(ss, hour, ',');
+    std::string text;
+    std::getline(ss, text, ',');
+
+    insertionMethod(&bPTree, std::atoi(postid.c_str()),std::atoi(userid.c_str()),std::atoi(hour.c_str()), text);
     //Convertir a formato de longitud fija
     for (char c : lineaArchivo) {
         if (c == '"') {
@@ -1146,6 +1166,7 @@ void DiskManager::MenuTree() {
         cout << "0: Recuperar arbol \n1: Insertar \n2: Buscar \n3: Imprimir arbol\n4: Borrar\n5: Generar imagen del arbol\n6: Salir" << endl;
         cout << "\tElija una opcion : ";
         cin >> option;
+        std::string text12;
 
         switch (option) {
             case 0:
@@ -1153,6 +1174,7 @@ void DiskManager::MenuTree() {
                 std::cout << "Recuperando el árbol..." << std::endl;
 
                 bPTree->deserialize("bptree.dat");
+
 
                 if (bPTree->getRoot() == nullptr) {
                     std::cerr << "Error: No se pudo recuperar el árbol." << std::endl;
@@ -1162,12 +1184,15 @@ void DiskManager::MenuTree() {
 
                 break;
             case 1:
-                // Inserta valores al arbol
-                int postid;
+                //*
+                int postid,userid,hour;
+                
                 std::cout << "\nIndica Postid: ";
-                std::cin >> postid; // >> userid >> hour >> text;
-                insertionMethod(&bPTree,postid);
+                std::cin >> postid >> userid >> hour >> text12;
+                insertionMethod(&bPTree,postid, userid, hour, text12);
                 break;
+                //*/
+
             case 2:
                 // Busca valores al arbol
                 int idx;
