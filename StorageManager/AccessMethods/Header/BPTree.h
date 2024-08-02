@@ -32,7 +32,10 @@ class BPTree {
     void setRoot(Node *ptr);
     void display(Node* cursor);
     void seqDisplay(Node* cursor);
-    void search(int key);
+
+    //void search(int key);
+    std::pair<int, int> search(int key);
+    
     void insert(int key, int NroBloque, int NroRegistro);
     void removeKey(int x);
     void removeInternal(int x, Node* cursor, Node* child);

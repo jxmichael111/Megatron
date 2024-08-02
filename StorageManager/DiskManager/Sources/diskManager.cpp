@@ -2,14 +2,14 @@
 #include "diskManager.h"
 
 // ---------------------------Metodos para el BPlusTree---------------------------
-void insertionMethod(BPTree** bPTree, int key, int NroBloque, int NroRegistro) {
+void insertionMethod(BPTree* bPTree, int key, int NroBloque, int NroRegistro) {
     // indice denso por key
     // llena el arbol
-    (*bPTree)->insert(key, NroBloque, NroRegistro);
+    (bPTree)->insert(key, NroBloque, NroRegistro);
     std::cout << "Se inserto el key:" << key << std::endl;
  
     // serializa el arbol (para poder recuperarlo)
-    (*bPTree)->serialize("bptree.dat");
+    (bPTree)->serialize("bptree.dat");
 }
 
 void printMethod(BPTree* bPTree) { 
@@ -34,9 +34,10 @@ void deleteMethod(BPTree* bPTree,int tmp) {
     bPTree->display(bPTree->getRoot());
 }
 
-void searchMethod(BPTree* bPTree,int idx) {
-    // recibir la dupla
-    bPTree->search(idx);
+std::pair<int, int> searchMethod(BPTree* bPTree, int idx) {
+    // Llamar a la función search de BPTree y recibir el par resultante
+    std::pair<int, int> result = bPTree->getUbicacionRegistro(idx);
+    return result;
 }
 
 // ==========================================================================
@@ -925,6 +926,8 @@ void DiskManager::useLongitudFija(std::string lineaArchivo) {
     bool is_string = false;
     int i = 0;
 
+    std::cout << "\tUSE LONGITUD FIJA: " << lineaArchivo << std::endl;
+
     std::istringstream ss(lineaArchivo);
     
     std::string key;
@@ -937,7 +940,7 @@ void DiskManager::useLongitudFija(std::string lineaArchivo) {
     int NroBloque = dataLocation.first;
     int NroRegistro = dataLocation.second;
 
-    insertionMethod(&bPTree, std::atoi(key.c_str()), NroBloque, NroRegistro);
+    insertionMethod(bPTree, std::atoi(key.c_str()), NroBloque, NroRegistro);
 
     //Convertir a formato de longitud fija
     for (char c : lineaArchivo) {
@@ -998,6 +1001,8 @@ void DiskManager::useLongitudFija(std::string lineaArchivo) {
                 std::stringstream ssToken(token);
                 std::getline(ssToken, token, ',');
                 ubicacion = std::stoi(token) + 1;
+            } else {
+                ubicacion = -1;
             }
             std::cout << "\tEspacio libre entre registros: " << ubicacion << std::endl;
         } 
@@ -1119,7 +1124,7 @@ void DiskManager::sectorFillLongitudFija(const std::string& lineaArchivo, int ub
                 archivoWriteSector.close();
             } else {
                 int numRegistroEnSector = (ubicacion % disco.getBytesxSector()) / this->longitudRegistro + 1;
-                actualizarLineaLongitudFija(this->sectorAct, lineaArchivo, numRegistroEnSector);
+                actualizarLineaLongitudFija(archivoSector, lineaArchivo, numRegistroEnSector);
             }
 
             espacioDisponible -= longitudRegistro;
@@ -1304,71 +1309,81 @@ void DiskManager::MenuTree() {
     int option;
 
     do {
-        
-        std::cout << "0: Recuperar arbol \n1: Insertar \n2: Buscar \n3: Imprimir arbol\n4: Borrar\n5: Generar imagen del arbol\n6: Salir" << std::endl;
-        std::cout << "\tElija una opcion : ";
+        std::cout << "0: Recuperar arbol\n"
+                  << "1: Insertar\n"
+                  << "2: Buscar\n"
+                  << "3: Imprimir arbol\n"
+                  << "4: Borrar\n"
+                  << "5: Generar imagen del arbol\n"
+                  << "6: Salir" << std::endl;
+        std::cout << "\tElija una opcion: ";
         std::cin >> option;
+
+        int key, NroBloque, NroRegistro, idx, tmp;
         std::string text12;
+        std::pair<int, int> search_result;
 
         switch (option) {
             case 0:
-                // Recuperar el arbol
                 std::cout << "Recuperando el árbol..." << std::endl;
-
                 bPTree->deserialize("bptree.dat");
-
 
                 if (bPTree->getRoot() == nullptr) {
                     std::cerr << "Error: No se pudo recuperar el árbol." << std::endl;
                 } else {
                     std::cout << "Árbol recuperado exitosamente." << std::endl;
                 }
+                break;
 
-                break;
             case 1:
-                //*
-                int key,NroBloque,NroRegistro;
-                
-                std::cout << "\nIndica Postid: ";
-                std::cin >> key >> NroBloque >> NroRegistro >> text12;
-                insertionMethod(&bPTree,key, NroBloque, NroRegistro);
+                std::cout << "\nIndica Postid, NroBloque, NroRegistro, texto: ";
+                std::cin >> key >> NroBloque >> NroRegistro;
+                std::getline(std::cin >> std::ws, text12); // Leer el texto con espacios
+                insertionMethod(bPTree, key, NroBloque, NroRegistro);
+                // ESTA FUNCION ES PARA LLENAR EL ARBOL, SOLO RECIBE
+                // ID (KEY) NUM_BLOQUE Y NUM_REGISTRO
                 break;
-                //*/
 
             case 2:
-                // Busca valores al arbol
-                int idx;
-                
-                std::cout << "Cual es el key? ";
+                std::cout << "¿Cuál es el key? ";
                 std::cin >> idx;
 
-                // el metodo search devuelve el num bloque y el num de registro
-                searchMethod(bPTree,idx);
+                search_result = searchMethod(bPTree, idx);
 
-                showBlockandRegisterContent(NroBloque, NroRegistro);
+                if (search_result.first != -1 && search_result.second != -1) {
+                    std::cout << "Encontrado en bloque " << search_result.first << ", registro " << search_result.second << std::endl;
+                    showBlockandRegisterContent(search_result.first, search_result.second);
+                } else {
+                    std::cout << "Clave no encontrada" << std::endl;
+                }
                 break;
+
             case 3:
-                // Imprime el arbol
                 printMethod(bPTree);
                 break;
+
             case 4:
-                // Borra valores del arbol
-                int tmp;
-                std::cout << "Clave a borrar: " << std::endl;
+                std::cout << "Clave a borrar: ";
                 std::cin >> tmp;
-                deleteMethod(bPTree,tmp);
+                deleteMethod(bPTree, tmp);
                 break;
+
             case 5:
-                //Genera imagen del arbol
                 bPTree->toDot("bptree.dot");
                 std::cout << "El archivo DOT se ha generado como 'bptree.dot'. Usa Graphviz para visualizarlo." << std::endl;
                 break;
-            default:
+
+            case 6:
                 flag = false;
                 break;
+
+            default:
+                std::cerr << "Opcion no valida. Intentalo de nuevo." << std::endl;
+                break;
         }
-    }while (flag);
+    } while (flag);
 }
+
 
 // ============================================= LONGITUD VARIABLE  =====================================================
 

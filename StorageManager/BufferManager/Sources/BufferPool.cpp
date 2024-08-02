@@ -147,6 +147,14 @@ int BufferPool::CLOCK() {
     }
 }
 
+std::vector<std::string> BufferPool::GetData(int frameID) {
+    Frame* frame = GetFrame(frameID);
+    std::vector<std::string> aux =frame->GetData();
+    if (frame) {
+        aux[0] = std::to_string(frameID) + aux[0];
+    }
+    return aux;  
+}
 
 /*
 int BufferManager::MRU(std::vector<Frame>& frames) {

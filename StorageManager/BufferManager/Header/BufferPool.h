@@ -105,5 +105,7 @@ public:
     */
     int CLOCK();
 
+    std::vector<std::string> GetData(int);
+
     
 };

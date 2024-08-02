@@ -495,7 +495,6 @@ std::pair<int, int> BPTree::getUbicacionRegistro(int clave) {
     return cursor->ptr2TreeOrData.dataPtr[idx];
 }
 
-
 void BPTree::serialize(const std::string& filename){
     std::string ruta = RUTA_BASE + filename; 
     std::ofstream out(ruta);
