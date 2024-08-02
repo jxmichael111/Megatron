@@ -7,13 +7,21 @@
 class Frame {
 private:
     int capacidad; 
-    std::vector<std::string> data;
-    std::queue<char> requests;
+    int espacio_disponible;
+    int espacio_usado;
+
+    std::vector<std::string> data;  // data guarda todo un bloque en memoria
+    std::queue<char> requests;      // solicitudes
     bool isPinned;
     bool dirtyFlag;
     int pinCount;
     int lastUsed; //LRU
     bool refBit; //CLOCK
+
+
+    void ViewEspacio();
+    void addCapacidad();
+
 public:
     /*
         @author Michael Ticona
@@ -164,4 +172,6 @@ public:
     void AddRegister(const std::vector<std::string>);
 
     bool isVoid();
+
+    int GetDataSize();
 };

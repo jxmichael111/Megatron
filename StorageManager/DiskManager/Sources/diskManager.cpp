@@ -1,40 +1,23 @@
+#include <string>
 #include "diskManager.h"
 
 // ---------------------------Metodos para el BPlusTree---------------------------
-void insertionMethod(BPTree** bPTree, int postid, int userid,int hour,std::string text ) {
-    //indice denso por postid
-
-    std::string fileName = RUTA_BASE + std::string("DBFiles/");
-
-    //nombre del archivo con el cual se encuentra
-    fileName += to_string(postid) + ".txt";
-    FILE* filePtr = fopen(fileName.c_str(), "w");
-    std::string userTuple = to_string(postid) + "|"
-                        + to_string(userid) + "|" 
-                        + to_string(hour) + "|" 
-                        + text +  "\n";
-    fprintf(filePtr, "%s", userTuple.c_str());
-
-    //indice denso por postid
-
-    (*bPTree)->insert(postid, filePtr);
-    fclose(filePtr);
-    std::cout << "Se inserto el postid:" << postid <<endl;
-
-    //LLENAR EL ARBOL
+void insertionMethod(BPTree** bPTree, int key, int NroBloque, int NroRegistro) {
+    // indice denso por key
+    // llena el arbol
+    (*bPTree)->insert(key, NroBloque, NroRegistro);
+    std::cout << "Se inserto el key:" << key << std::endl;
+ 
+    // serializa el arbol (para poder recuperarlo)
     (*bPTree)->serialize("bptree.dat");
 }
 
-void searchMethod(BPTree* bPTree,int idx) {
-    bPTree->search(idx);
-}
-
-void printMethod(BPTree* bPTree) {
+void printMethod(BPTree* bPTree) { 
     int opt;
     std::cout << "\n\t1.Arbol de niveles \n\t2. Forma secuencial\n";
     std::cin >> opt;
 
-    std::cout << endl;
+    std::cout << std::endl;
     if (opt == 1)
         bPTree->display(bPTree->getRoot());
     else
@@ -42,13 +25,18 @@ void printMethod(BPTree* bPTree) {
 }
 
 void deleteMethod(BPTree* bPTree,int tmp) {
-    cout << "Del arbol, cual deseas borrar?: " << endl;
+    std::cout << "Del arbol, cual deseas borrar?: " << std::endl;
     bPTree->display(bPTree->getRoot());
  
     bPTree->removeKey(tmp);
 
-    cout << "Arbol actualizado" << endl;
+    std::cout << "Arbol actualizado" << std::endl;
     bPTree->display(bPTree->getRoot());
+}
+
+void searchMethod(BPTree* bPTree,int idx) {
+    // recibir la dupla
+    bPTree->search(idx);
 }
 
 // ==========================================================================
@@ -200,6 +188,28 @@ void DiskManager::actualizarBloque() {
     validarUbicacionActual();
 }
 
+/*
+    Funcion para mostrar contenido de un numBloque y un numRegistro
+*/
+void DiskManager::showBlockandRegisterContent(int numBloque, int NroRegistro) {
+    std::string carpetaBloque = RUTA_BASE + std::string("Bloques/");
+    std::string archivoBloque = carpetaBloque + std::string("Bloque") + std::to_string(numBloque) + ".txt";
+    std::ifstream archivo(archivoBloque);
+
+    if (!archivo.is_open()) {
+        std::cerr << "Error al abrir el archivo." << std::endl;
+        return;
+    }
+
+    std::string linea;
+    for (int i=0; i < NroRegistro; i++){
+        std::getline(archivo, linea);
+    }
+    std::cout << "Informacion del registro: " << linea << std::endl;
+
+    archivo.close();
+}
+
 void DiskManager::showBlockContent(int numBloque) {
     std::string carpetaBloque = RUTA_BASE + std::string("Bloques/");
     std::string archivoBloque = carpetaBloque + std::string("Bloque") + std::to_string(numBloque) + ".txt";
@@ -274,17 +284,53 @@ void DiskManager::actualizar(int numBloque, std::string linea, int numRegistro) 
     }
 }
 
-void DiskManager::eliminar(int numBloque, int numRegistro,int num) {
+/* Pagina -> Requerimientos -> Disco
+
+    
+    Registro 1
+    Registro 2
+
+    Registro 4
+    
+    L L W L W L
+    
+    W -> conte, c
+
+
+    numLinea:
+        Delete - Actualizar : recuperas del arbol
+        Inserción = -1  
+        -1 si no existe
+
+        
+                
+
+    vector<string> searchKeysDeletedRegisters;
+
+    
+*/
+
+void DiskManager::eliminar(int numBloque, int numRegistro,int claveBusqueda){ //recibe la clave de busqueda
     if(this->tipoLongitud) {
         //useLongitudVariable(numBloque, numRegistro);
     } else {
+        
+        // search del num para el path (num bloque, num registro) 
+        // nos devuelve ---->  <NroBloque NroLinea>
+        // eliminamos en el disco
         eliminarLineaLongitudFija(numBloque, numRegistro);
-        deleteMethod(bPTree,num);
+        // eliminar en el bplus
+        deleteMethod(bPTree, claveBusqueda);
     }
 }
 
-std::vector<std::string> DiskManager::readBlockToVector(int numBloque) {
+/*
+    Cargar un bloque a una página: Carga el contenifo de un file (blqoue) a un vector (página).
+*/
+std::vector<std::string> DiskManager::readBlockToVector(int numBloque) { 
     std::vector<std::string> registros;
+    Nodo* bloque = searchBlockHeapFile(numBloque);
+
     std::string carpetaBloque = RUTA_BASE + std::string("Bloques/");
     std::string archivoBloque = carpetaBloque + "Bloque" + std::to_string(numBloque) + ".txt";
     std::ifstream file(archivoBloque);
@@ -295,6 +341,12 @@ std::vector<std::string> DiskManager::readBlockToVector(int numBloque) {
     }
 
     std::string line;
+
+    //Espacio total y libre
+    line = std::to_string(disco.getTamañoBloque()) + " " + std::to_string(bloque->espacioLibre);
+
+    registros.push_back(line);
+
     std::getline(file, line); // Ignorar la cabecera
     while (std::getline(file, line)) {
         std::string info;
@@ -314,19 +366,108 @@ std::vector<std::string> DiskManager::readBlockToVector(int numBloque) {
     file.close();
     return registros;
 }
+
 /*
-std::tuple<int, int> DiskManager::buscarID(const std::string& id) {
-    for (int i = 0; i < numBloques(); ++i) {
+    Devuelve una tupla, el num bloque y el num de linea
+    Se utiliza para el arbol Bplus
+*/
+
+std::pair<int, int> DiskManager::buscarID(const std::string& id) { //Soicitado por el árbol
+    for (int i = 0; i < disco.getCantidadBloques(); ++i) {
         std::vector<std::string> registros = readBlockToVector(i);
         for (size_t j = 0; j < registros.size(); ++j) {
             if (registros[j].find(id) != std::string::npos) {
-                return std::make_tuple(i, j);
+                std::cout << "Registro encontrado en el BLOQUE: " << i << ", LINEA: " << j << std::endl;
+                return std::make_pair(i, j);
             }
         }
     }
-    return std::make_tuple(-1, -1); // ID no encontrado
+    return std::make_pair(-1, -1); // ID no encontrado
 }
-//*/
+
+/*
+    Recibe un vector(página) del BufferManager para guardar en el disco. Maneja inserciones y modifcaciones.
+*/
+void DiskManager::insertPagetoBlock(std::vector<std::string>& pagina, int numPag, int claveBusqueda) {
+    Nodo* bloque = searchBlockHeapFile(numPag);
+    
+    std::string carpetaBloque = RUTA_BASE + std::string("Bloques/");
+    std::string archivoBloque = carpetaBloque + "Bloque" + std::to_string(numPag) + ".txt";
+    std::ofstream file(archivoBloque, std::ios::trunc); // Abre el archivo en modo trunc (borra contenido si existe)
+
+    if (!file.is_open()) {
+        std::cerr << "No se pudo abrir el archivo " << archivoBloque << " para escritura.\n";
+        return;
+    }
+
+    // Procesa la segunda línea para actualizar el espacio libre
+    if (pagina.size() > 1) {
+        file << pagina[1] << std::endl;
+
+        std::stringstream ss(pagina[1]);
+        std::string token;
+        std::getline(ss, token, '#'); // Ignorar el identificador
+        std::getline(ss, token, '#');
+        bloque->espacioLibre = std::atoi(token.c_str());
+    }
+
+    std::string registrosLibres;
+    int i = 1;
+
+    for (auto it = bloque->sectores.begin(); it != bloque->sectores.end(); ++it) {
+        bool estado = std::get<4>(*it); // Obtener el estado del sector
+        if (!estado) {
+            auto tupla = it;
+            this->platoAct = std::get<0>(*tupla);
+            this->superfAct = std::get<1>(*tupla);
+            this->pistaAct = std::get<2>(*tupla);
+            this->sectorAct = std::get<3>(*tupla);
+
+            bool found = true; // Se encontró un sector con estado false
+            break;
+        }
+    }
+
+    for (const std::string& linea : pagina) {
+        if (linea.find('$') != std::string::npos && linea.size() == 1) {
+            registrosLibres = std::to_string(i) + ",";
+            std::string registroVacio(this->longitudRegistro, ' ');
+            file << registroVacio << std::endl;
+
+            // LLENAR SECTOR
+            sectorFillLongitudFija(registroVacio, i, bloque);
+
+            // ARBOL
+            // deleteMethod(bPTree, claveBusqueda);
+        } else if (linea.find('$') != std::string::npos) {
+            std::string nuevaLinea = linea.substr(linea.find('$')); // Obtener la subcadena desde el '$'
+            file << nuevaLinea << std::endl;
+
+            // LLENAR SECTOR
+            sectorFillLongitudFija(nuevaLinea, i, bloque);
+
+        } else if (linea.find('+') != std::string::npos) {
+            std::string nuevaLinea = linea.substr(linea.find('+')); // Obtener la subcadena desde el '+'
+            file << nuevaLinea << std::endl;
+
+            // LLENAR SECTOR
+            sectorFillLongitudFija(nuevaLinea, -1, bloque);
+        } else {
+            file << linea << std::endl;
+        }
+        i++;
+    }
+
+    CabeceraBloque nuevaCabecera;
+    nuevaCabecera.identificador = bloque->numeroBloque;
+    nuevaCabecera.espacioDisponible = bloque->espacioLibre;
+    nuevaCabecera.espaciosLibres = registrosLibres;
+    reemplazarCabecera(archivoBloque, nuevaCabecera);
+
+    file.close();
+}
+
+
 
 // ============================================ HEAP FILE ===================================================
 
@@ -619,6 +760,7 @@ void DiskManager::guardarHeapFile() {
 
     outFile.close();
 }
+
 void DiskManager::recuperarHeapFile() {
     std::string filename = RUTA_BASE + std::string("heapFile.txt");
     std::ifstream inFile(filename);
@@ -784,17 +926,19 @@ void DiskManager::useLongitudFija(std::string lineaArchivo) {
     int i = 0;
 
     std::istringstream ss(lineaArchivo);
-    std::string postid;
-    std::getline(ss, postid, ',');
-    std::string userid;
-    std::getline(ss, userid, ',');
     
-    std::string hour;
-    std::getline(ss, hour, ',');
-    std::string text;
-    std::getline(ss, text, ',');
+    std::string key;
+    std::getline(ss, key, ','); // se supone que es id_post
 
-    insertionMethod(&bPTree, std::atoi(postid.c_str()),std::atoi(userid.c_str()),std::atoi(hour.c_str()), text);
+    // recuperamos el num de bloque con el num de registro
+    std::pair<int, int> dataLocation = buscarID(key);
+
+    // Extrae los valores del par
+    int NroBloque = dataLocation.first;
+    int NroRegistro = dataLocation.second;
+
+    insertionMethod(&bPTree, std::atoi(key.c_str()), NroBloque, NroRegistro);
+
     //Convertir a formato de longitud fija
     for (char c : lineaArchivo) {
         if (c == '"') {
@@ -835,7 +979,7 @@ void DiskManager::useLongitudFija(std::string lineaArchivo) {
         }
 
         std::string linea;
-        int ubicacion = 0;
+        int ubicacion = -1;
         std::string espaciosLibres = "";
 
         std::getline(archivoReadBloque, linea);
@@ -854,8 +998,6 @@ void DiskManager::useLongitudFija(std::string lineaArchivo) {
                 std::stringstream ssToken(token);
                 std::getline(ssToken, token, ',');
                 ubicacion = std::stoi(token) + 1;
-            } else {
-                ubicacion = -1;
             }
             std::cout << "\tEspacio libre entre registros: " << ubicacion << std::endl;
         } 
@@ -977,7 +1119,7 @@ void DiskManager::sectorFillLongitudFija(const std::string& lineaArchivo, int ub
                 archivoWriteSector.close();
             } else {
                 int numRegistroEnSector = (ubicacion % disco.getBytesxSector()) / this->longitudRegistro + 1;
-                actualizarLineaLongitudFija(archivoSector, lineaArchivo, ubicacion);
+                actualizarLineaLongitudFija(this->sectorAct, lineaArchivo, numRegistroEnSector);
             }
 
             espacioDisponible -= longitudRegistro;
@@ -1163,9 +1305,9 @@ void DiskManager::MenuTree() {
 
     do {
         
-        cout << "0: Recuperar arbol \n1: Insertar \n2: Buscar \n3: Imprimir arbol\n4: Borrar\n5: Generar imagen del arbol\n6: Salir" << endl;
-        cout << "\tElija una opcion : ";
-        cin >> option;
+        std::cout << "0: Recuperar arbol \n1: Insertar \n2: Buscar \n3: Imprimir arbol\n4: Borrar\n5: Generar imagen del arbol\n6: Salir" << std::endl;
+        std::cout << "\tElija una opcion : ";
+        std::cin >> option;
         std::string text12;
 
         switch (option) {
@@ -1185,20 +1327,25 @@ void DiskManager::MenuTree() {
                 break;
             case 1:
                 //*
-                int postid,userid,hour;
+                int key,NroBloque,NroRegistro;
                 
                 std::cout << "\nIndica Postid: ";
-                std::cin >> postid >> userid >> hour >> text12;
-                insertionMethod(&bPTree,postid, userid, hour, text12);
+                std::cin >> key >> NroBloque >> NroRegistro >> text12;
+                insertionMethod(&bPTree,key, NroBloque, NroRegistro);
                 break;
                 //*/
 
             case 2:
                 // Busca valores al arbol
                 int idx;
-                std::cout << "Cual es el postid? ";
+                
+                std::cout << "Cual es el key? ";
                 std::cin >> idx;
+
+                // el metodo search devuelve el num bloque y el num de registro
                 searchMethod(bPTree,idx);
+
+                showBlockandRegisterContent(NroBloque, NroRegistro);
                 break;
             case 3:
                 // Imprime el arbol
@@ -1207,8 +1354,8 @@ void DiskManager::MenuTree() {
             case 4:
                 // Borra valores del arbol
                 int tmp;
-                cout << "Clave a borrar: " << endl;
-                cin >> tmp;
+                std::cout << "Clave a borrar: " << std::endl;
+                std::cin >> tmp;
                 deleteMethod(bPTree,tmp);
                 break;
             case 5:

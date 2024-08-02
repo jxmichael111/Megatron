@@ -17,6 +17,7 @@
 #include <iomanip>
 #include <filesystem>
 #include <algorithm>
+#include <utility>
 
 #include "config.h"
 #include "../../AccessMethods/Header/BPTree.h"
@@ -173,6 +174,9 @@ class DiskManager {
         @author Andrea Cuela
         */
         void actualizarBloque();
+        
+
+        void showBlockandRegisterContent(int, int);
 
         /*
         @author Andrea Cuela
@@ -194,10 +198,6 @@ class DiskManager {
 
         void eliminar(int numBloque, int numRegistro,int num);
 
-        std::string leer(int numBloque, int numRegistro);
-
-
-
         /*
         @author Andrea Cuela
         */
@@ -206,7 +206,10 @@ class DiskManager {
         /*
         @author Andrea Cuela
         */
-        std::tuple<int, int> buscarID(const std::string&);
+        std::pair<int, int> buscarID(const std::string& id);
+
+
+        void insertPagetoBlock(std::vector<std::string>& pagina, int numPag, int claveBusqueda);
 
 
         // ================= HEAP FILE =====================
@@ -325,7 +328,7 @@ class DiskManager {
 
         void eliminarLineaLongitudFija(int numBloque, int numRegistro);
 
-        void MenuTree();
+        void MenuTree(); 
 
         // ================= LONGITUD VARIABLE ==============
 

@@ -1,29 +1,40 @@
-#include <iostream>
+#ifndef NODE_H
+#define NODE_H
+
 #include <vector>
 #include <fstream>
-#include <string>
 #include <sstream>
+#include <iostream>
+#include <utility>
 
-using namespace std;
 
+/*
+    bool isLeaf: Indica si el nodo es una hoja.
+    std::vector<int> keys: Almacena las claves en el nodo.
+    union Ptr2TreeOrData:
+        std::vector<std::pair<int, int>> dataPtr: Para nodos hoja, almacena pares de enteros que representan datos.
+        std::vector<Node*> ptr2Tree: Para nodos internos, almacena punteros a nodos hijos.
+    Node* ptr2next: Apunta al siguiente nodo (usado en nodos hoja para formar una lista enlazada).
+*/
 class Node {
-   public:
+public:
     bool isLeaf;
-    vector<int> keys;
-    Node* ptr2next;
-    std::tuple<int, int> ubicacion;            //Pointer to connect next node for leaf nodes
-    union ptr {                  //to make memory efficient Node
-        vector<Node*> ptr2Tree;  //Array of pointers to Children sub-trees for intermediate Nodes
-        vector<FILE*> dataPtr;   // Data-Pointer for the leaf node
+    std::vector<int> keys;
 
-        ptr(){}   // To remove the error !?
-        ~ptr(){}  // To remove the error !?
+    union Ptr2TreeOrData {
+        std::vector<std::pair<int, int>> dataPtr;  // Para nodos hoja
+        std::vector<Node*> ptr2Tree;               // Para nodos internos
+
+        Ptr2TreeOrData() {}
+        ~Ptr2TreeOrData() {}
     } ptr2TreeOrData;
-    friend class BPTree;  // to access private members of the Node and hold the encapsulation concept
-   
-   public:
-    Node();
+
+    Node* ptr2next;
+
+    Node(bool leaf = false);
     void serialize(std::ofstream& out);
     static Node* deserialize(std::ifstream& in);
     void toDot(std::ofstream& out, int& nodeCount);
 };
+
+#endif // NODE_H

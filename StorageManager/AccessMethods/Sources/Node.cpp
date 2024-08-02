@@ -1,15 +1,20 @@
 #include "Node.h"
 
-Node::Node(){
-    this->isLeaf = false;
+Node::Node(bool leaf) {
+    this->isLeaf = leaf;
     this->ptr2next = NULL;
+    if (leaf) {
+        ptr2TreeOrData.dataPtr = std::vector<std::pair<int, int>>();
+    } else {
+        ptr2TreeOrData.ptr2Tree = std::vector<Node*>();
+    }
 }
 
-void Node::serialize(std::ofstream& out){
+void Node::serialize(std::ofstream& out) {
     if (isLeaf) {
         out << "Leaf cant: " << keys.size() << " |\n";
         for (size_t i = 0; i < keys.size(); ++i) {
-            out << "Leaf_place " << keys[i] << " path\n";  // Reemplaza "path" con información de ruta real si es necesario
+            out << "Leaf_place " << keys[i] << " " << ptr2TreeOrData.dataPtr[i].first << " " << ptr2TreeOrData.dataPtr[i].second << "\n";
         }
     } else {
         out << "Internal cant: " << keys.size() << " |";
@@ -24,15 +29,16 @@ void Node::serialize(std::ofstream& out){
         }
     }
 }
+
 Node* Node::deserialize(std::ifstream& in) {
     std::string line;
     if (!std::getline(in, line)) {
-        return nullptr;  // End of file or error
+        return nullptr;  // Fin del archivo o error
     }
     std::istringstream iss(line);
     std::string nodeType;
     iss >> nodeType;
-    Node* node = new Node();
+    Node* node = new Node(nodeType == "Leaf");
     if (nodeType == "Leaf") {
         node->isLeaf = true;
         std::string cantLabel;
@@ -40,13 +46,15 @@ Node* Node::deserialize(std::ifstream& in) {
         iss >> cantLabel >> keysSize;
         
         node->keys.resize(keysSize);
+        node->ptr2TreeOrData.dataPtr.resize(keysSize);
         for (size_t i = 0; i < keysSize; ++i) {
             if (!std::getline(in, line)) break;
             std::istringstream leafStream(line);
-            std::string leafLabel, path;
-            int key;
-            leafStream >> leafLabel >> key >> path;
+            std::string leafLabel;
+            int key, block, line;
+            leafStream >> leafLabel >> key >> block >> line;
             node->keys[i] = key;
+            node->ptr2TreeOrData.dataPtr[i] = std::make_pair(block, line);
         }
     } else if (nodeType == "Internal") {
         node->isLeaf = false;
@@ -62,12 +70,12 @@ Node* Node::deserialize(std::ifstream& in) {
         for (size_t i = 0; i < childrenSize; ++i) {
             node->ptr2TreeOrData.ptr2Tree[i] = Node::deserialize(in);
             if (!node->ptr2TreeOrData.ptr2Tree[i]) {
-                std::cerr << "Error deserializing child node" << std::endl;
+                std::cerr << "Error deserializando nodo hijo" << std::endl;
                 break;
             }
         }
     } else {
-        std::cerr << "Unknown node type: " << nodeType << std::endl;
+        std::cerr << "Tipo de nodo desconocido: " << nodeType << std::endl;
         delete node;
         return nullptr;
     }
@@ -77,16 +85,13 @@ Node* Node::deserialize(std::ifstream& in) {
 void Node::toDot(std::ofstream& out, int& nodeCount) {
     int currentNode = nodeCount++;
     out << "node" << currentNode << " [label=\"";
-    // Define los puertos para cada key en el nodo
     for (size_t i = 0; i < keys.size(); ++i) {
         out << "<f" << i << "> " << keys[i];
         if (i != keys.size() - 1) {
             out << " | ";
         }
     }
-    // Añadir un puerto extra al final para facilitar las conexiones
     out << " | <f" << keys.size() << ">\"];\n";
-    // Conexiones a los hijos si no es un nodo hoja
     if (!isLeaf) {
         for (size_t i = 0; i < ptr2TreeOrData.ptr2Tree.size(); ++i) {
             Node* child = ptr2TreeOrData.ptr2Tree[i];

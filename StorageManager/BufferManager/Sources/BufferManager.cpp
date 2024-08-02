@@ -239,7 +239,7 @@ void BufferManager::ModRegister(int pageID, DiskManager* disco) {
             int option;
             std::cin >> option;
             switch(option) {
-                case 1: {
+                case 1: {    // Actualizar
                     int NroRegister;
                     ViewPagina(pageID);
                     std::cout << "Que registro deseas Modificar:" << std::endl;
@@ -253,15 +253,15 @@ void BufferManager::ModRegister(int pageID, DiskManager* disco) {
                     
                     frame->ViewRegister(NroRegister);
                     std::cout << "____________________________________" << std::endl;
-                    for(int i = 0; i < registeer.size(); i++) {
-                        std::cout << "Columa " << i+1 << ": " << registeer[i] << std::endl; 
+                    for(int i = 1; i < registeer.size(); i++) {
+                        std::cout << "Columa " << i << ": " << registeer[i] << std::endl; 
                     } 
 
                     int col;
                     std::cout << "Que columna desea Modificar:" << std::endl; 
                     std::cin >> col;
-                    if (col-1 < index.size()) {
-                        std::cout << registeer[col-1] << std::endl;
+                    if (col < index.size()) {
+                        std::cout << registeer[col] << std::endl;
                         std::cout << "_____________________________________________" << std::endl;
 
                         std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
@@ -269,31 +269,27 @@ void BufferManager::ModRegister(int pageID, DiskManager* disco) {
                         std::string aux;
                         std::getline(std::cin, aux);
                         
-                        if(aux.size() <= index[col-1]) 
-                            aux = aux.substr(0, index[col-1]);
+                        if(aux.size() <= index[col]) 
+                            aux = aux.substr(0, index[col]);
 
-                        for(int i = aux.size(); i < index[col-1]; i ++) 
+                        for(int i = aux.size(); i < index[col]; i ++) 
                             aux += " ";
 
-                        registeer[col-1] = aux;
+                        registeer[col] = aux;
                         frame->SetRegister(NroRegister, registeer);
 
-                        std::string row;
-                        for(int i = 0; i < registeer.size(); i++)
-                            row += registeer[i];
-
-                        disco->actualizar(pageID,row,NroRegister);
                     } else {
                         std::cout << "Columna excedida" << std::endl;
                     }
                     break;
                 }
-                case 2: {
+                case 2: { // Insertar
+
                     std::vector<int> index = frame->GetIndex(1);
                     std::vector<std::string> newRegister(index.size());
 
-                    for(int i = 0; i < index.size(); i++) {
-                        std::cout << "Ingrese el valor para la columna " << i+1 << ": ";
+                    for(int i = 1; i < index.size(); i++) {
+                        std::cout << "Ingrese el valor para la columna " << i << ": ";
                         std::string aux;
                         std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
                         std::getline(std::cin, aux);
@@ -307,26 +303,47 @@ void BufferManager::ModRegister(int pageID, DiskManager* disco) {
                         newRegister[i] = aux;
                     }
 
-                    std::string row;
-                    for(int i = 0; i < newRegister.size(); i++)
-                        row += newRegister[i];
                     frame->AddRegister(newRegister);
-                    disco->insertar(row);
                     std::cout << "Registro insertado correctamente." << std::endl;
                     break;
                 }
-                case 3: {
-                    int NroRegister;
+                case 3: { // Eliminar
+
+                    int claveBusqueda;
                     ViewPagina(pageID);
+
+                    int clave_indice;
+                    /*
+                        clave_indice = indice por el cual se va a borrar
+                            post_id = 0
+                            user_id = 1  
+                            fecha = 2   
+                            text = 3
+                    */
+                    clave_indice = 0;
+
                     std::cout << "Que registro deseas Eliminar:\n";
-                    std::cin >> NroRegister;
-                    for(int i = 1; i <= bufferPool.GetSize(); i++){
+                    std::cin >> claveBusqueda;
+
+                    // aux va a ser llenado con los registros que estan en la pagina
+                    
+                    
+                    // i va a ser la linea que va a ser eliminada
+                    // frame->GetRegister(i) te devuelve el registro en forma de vector
+
+                    for(int i = 1; i <= frame->GetDataSize(); i++){
                         std::vector<std::string> index = frame->GetRegister(i);
-                        std::cout <<  index[0] <<std::endl;
-                        if(std::atoi(index[0].c_str()) == NroRegister){
+                        std::cout <<  index[clave_indice] <<std::endl;
+                        if(std::atoi(index[clave_indice].c_str()) == claveBusqueda){
                             std::cout << i <<std::endl;
                             frame->RemoveRegister(i);
-                            disco->eliminar(pageID,i+1,NroRegister);
+
+                            // esto de borra de inmediato al disco luego de borrar en frame
+                            // faltaria corregir esa logica
+                            // esta funcion deberia estar al momento de reemplazar pagina
+                            // o cuando se guarda a disco por voluntad
+                            //disco->eliminar(pageID,i+1,claveBusqueda);
+                            break;
                         }
                     }
                     std::cout << "Registro eliminado correctamente." << std::endl;

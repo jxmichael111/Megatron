@@ -7,6 +7,10 @@
 #include <algorithm>
 #include <limits>
 
+
+
+
+
 /*
 	@author Andrea Cuela Y Michael Ticona
 */
@@ -1021,7 +1025,7 @@ int main() {
         cout << "0: Recuperar arbol \n1: Insertar \n2: Buscar \n3: Imprimir arbol\n4: Borrar\n5: Generar imagen del arbol\n6: Salir" << endl;
         cout << "\tElija una opcion : ";
         cin >> option;
-
+		int key, Nbloque, Nregister;
         switch (option) {
             case 0:
                 // Recuperar el arbol
@@ -1038,8 +1042,10 @@ int main() {
 
                 break;
             case 1:
+				
+				std::cin >> key >> Nbloque>> Nregister;
                 // Inserta valores al arbol
-                insertionMethod(&bPTree);
+                insertionMethod(&bPTree,key,Nbloque,Nregister);
                 break;
             case 2:
                 // Busca valores al arbol

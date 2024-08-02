@@ -11,6 +11,8 @@
 #include "Node.h"
 #include "../../DiskManager/Header/config.h"
 
+using namespace std;
+
 class BPTree {
     private:
     int maxIntChildLimit;                                   //Limiting  #of children for internal Nodes!
@@ -31,11 +33,14 @@ class BPTree {
     void display(Node* cursor);
     void seqDisplay(Node* cursor);
     void search(int key);
-    void insert(int key, FILE* filePtr);
+    void insert(int key, int NroBloque, int NroRegistro);
     void removeKey(int x);
     void removeInternal(int x, Node* cursor, Node* child);
+    std::pair<int, int> getUbicacionRegistro(int clave);
+
 
     void serialize(const std::string& filename);
     void deserialize(const std::string& filename);
     void toDot(const std::string& filename);
+    void rangeSearch(int startKey, int endKey);
 };

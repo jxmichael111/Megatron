@@ -60,6 +60,7 @@ int Disk::getCantidadSectoresxBloque() {
     return this->sectoresxBloque;
 }
 
+// Devuelve la capacidad del disco
 int Disk::getTamañoBloque() {
     int tamaño = this->bytesxSector * this->sectoresxBloque;
     return tamaño;

@@ -5,15 +5,15 @@
 
 void Frame::ViewData() {
     
-
-    for(int i = 0; i < data.size(); i++) {
-        /*
+    for(int i = 1; i < data.size(); i++) {
+        //*
         std::string FirstLine = data[i];
         size_t pos = FirstLine.find('|');
         std::string Line = FirstLine.substr(pos + 1);
         std::cout << Line << std::endl;
         //*/
-        std::cout << data[i] << std::endl;
+
+        //std::cout << data[i] << std::endl;
     }
 }
 
@@ -109,12 +109,43 @@ void Frame::SetData(std::string registro) {
     data.push_back(registro);
 }
 
-std::vector<std::string> Frame::GetData() { 
-    return data;
+void Frame::ViewEspacio() {
+    std::cout << "Capacidad Total:" << capacidad << std::endl;
+    std::cout << "Capacidad Usada:" << espacio_usado << std::endl;
+    std::cout << "Capacidad Libre:" << espacio_disponible << std::endl;
+}
+
+void Frame::addCapacidad() {
+    std::string First = data[0];
+
+    std::stringstream ss(First);
+    // Leer los dos números del stringstream
+    ss >> espacio_disponible;
+
+    espacio_usado = capacidad - espacio_disponible;
+
+}
+
+std::vector<std::string> Frame::GetData() {
+    std::vector<std::string> aux;
+
+    std::string First = "#" + std::to_string(espacio_disponible) + "##";
+
+
+    aux.push_back(First);
+
+    for(int i = 1; i < data.size(); i++) {
+
+        std::string FirstLine = data[i];
+        size_t pos = FirstLine.find('|');
+        std::string Line = FirstLine.substr(pos + 1);
+        aux.push_back(Line);
+    }
+    return aux;
 }
 
 void Frame::ViewRegister(int NroRegister) {
-    std::string FirstLine = data[NroRegister-1];
+    std::string FirstLine = data[NroRegister];
     size_t pos = FirstLine.find('|');
     std::string aux = FirstLine.substr(pos + 1);
     
@@ -126,7 +157,7 @@ void Frame::ViewRegister(int NroRegister) {
 std::vector<int> Frame::GetIndex(int Register) {
     std::vector<int> index;
     if (!data.empty()) {
-        std::string FirstLine = data[Register-1];
+        std::string FirstLine = data[Register];
         size_t pos = FirstLine.find('|');
         
         if (pos != std::string::npos) {
@@ -153,11 +184,11 @@ std::vector<std::string> Frame::GetRegister(int NroRegister) {
     std::vector<std::string> Register;
     std::vector<int> Index = GetIndex(NroRegister);
 
-    if (NroRegister-1 >= data.size() || Index.empty()) {
+    if (NroRegister >= data.size() || Index.empty()) {
         return Register; 
     }
 
-    std::string FirstLine = data[NroRegister-1];
+    std::string FirstLine = data[NroRegister];
     size_t pos = FirstLine.find('|');
 
     std::string Line = FirstLine.substr(pos + 1);
@@ -178,24 +209,31 @@ std::vector<std::string> Frame::GetRegister(int NroRegister) {
 
 void Frame::SetRegister(int NroRegister, std::vector<std::string> Register) {
     std::string row;
-    std::string FirstLine = data[NroRegister-1];
+    std::string FirstLine = data[NroRegister];
     size_t pos = FirstLine.find('|');
     std::string Line = FirstLine.substr(0,pos+1);
 
     for(int i = 0; i < Register.size(); i++)
         row += Register[i];
 
-    data[NroRegister-1]= Line + row;
+    data[NroRegister-1]= "$" + Line + row;
 }
 
 void Frame::RemoveRegister(int NroRegister) {
     if (NroRegister < data.size()) {
-        data.erase(data.begin() + NroRegister-1);
+        std::string row;
+        std::string FirstLine = data[NroRegister];
+        size_t pos = FirstLine.find('|'); 
+        std::string Line = FirstLine.substr(0,pos+1);
+        Line += "$";
+        
+        data[NroRegister-1] = Line;
     }
 }
 
 void Frame::AddRegister(std::vector<std::string> Register) {
     std::string row;
+    row = "+";
     for(int i = 0; i < Register.size(); i++)
         row += Register[i];
 
@@ -205,6 +243,10 @@ void Frame::AddRegister(std::vector<std::string> Register) {
 bool Frame::isVoid()
 {
     return data.empty();
+}
+
+int Frame::GetDataSize() {
+    return data.size();
 }
 
 bool Frame::GetDirty()

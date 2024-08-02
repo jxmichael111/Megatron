@@ -389,7 +389,7 @@ std::string Megatron::crearArchivoRelacion(std::string Esquema) {
     return true;    
 }*/
 
-
+ 
 void Megatron::menuDisco() {
     int option;
 
@@ -520,7 +520,7 @@ void Megatron::menuBuffer() {
         case 4:
             std::cout << "Ingrese ID de pagina: ";
             std::cin >> pageID;
-            gestor.PinearPagina(pageID);
+                        gestor.PinearPagina(pageID);
             break;
         case 5:
             gestor.PrintRequest();
